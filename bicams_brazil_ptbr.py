@@ -138,16 +138,19 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
     
     pdf.set_font("Arial", size=10)
     formatted_date = format_date(test_date)
-    header_text = f"Nome ou Código: {patient_name} | Sexo: {sex} | Idade: {age} anos\nEscolaridade: {education} anos | Data do Teste: {formatted_date}"
-    pdf.multi_cell(190, 6, txt=header_text)
+    header_text = (f"Nome ou Código: {patient_name} | Sexo: {sex} | Idade: {age} anos\n"
+                   f"Escolaridade: {education} anos | Data do Teste: {formatted_date}")
+    
+    # Centralize the header text
+    pdf.multi_cell(190, 6, txt=header_text, align="C")
     pdf.cell(190, 6, txt="", ln=True)
 
     for data in report_data:
         measure, z_score, percentile, fig, score_label = data
         pdf.set_font("Arial", "B", size=10)
-        pdf.cell(190, 6, txt=f"{measure}", ln=True)
+        pdf.cell(190, 6, txt=f"{measure}", ln=True, align="C")
         pdf.set_font("Arial", size=10)
-        pdf.cell(190, 6, txt=f"Z-score: {z_score:.2f} | Percentil: {percentile:.1f}% | Classificação: {score_label[2]}", ln=True)
+        pdf.cell(190, 6, txt=f"Z-score: {z_score:.2f} | Percentil: {percentile:.1f}% | Classificação: {score_label[2]}", ln=True, align="C")
         pdf.cell(190, 6, txt="", ln=True)
         
         # Save figure to a temporary file with consistent size
@@ -161,13 +164,13 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
     # Add the citation
     pdf.cell(190, 6, txt="", ln=True)
     pdf.set_font("Arial", "I", size=8)
-    pdf.multi_cell(190, 4, txt="Conversão normativa utilizando a *Calculadora Normativa do BICAMS para a População Brasileira*, desenvolvida por Jonadab dos Santos Silva. Disponível em ", align="L")
+    pdf.multi_cell(190, 4, txt="Conversão normativa utilizando a *Calculadora Normativa do BICAMS para a População Brasileira*, desenvolvida por Jonadab dos Santos Silva. Disponível em https://bicams-brazil-calculator.streamlit.app/", align="C")
     pdf.set_text_color(0, 0, 255)
     pdf.set_font("Arial", "U", 8)
-    pdf.cell(0, 4, "https://bicams-brazil-calculator.streamlit.app/", ln=True, link="https://bicams-brazil-calculator.streamlit.app/")
+    pdf.cell(0, 4, "https://bicams-brazil-calculator.streamlit.app/", ln=True, link="https://bicams-brazil-calculator.streamlit.app/", align="C")
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("Arial", "I", size=8)
-    pdf.multi_cell(190, 4, txt="Fonte dos dados normativos: Spedo CT et al. Brief International Cognitive Assessment for Multiple Sclerosis (BICAMS): discrete and regression-based norms for the Brazilian context. Arq Neuropsiquiatr. 2022 Jan;80(1):62-68. doi: 10.1590/0004-282X-ANP-2020-0526.", align="L")
+    pdf.multi_cell(190, 4, txt="Fonte dos dados normativos: Spedo CT, Pereira DA, Frndak SE, Marques VD, Barreira AA, Smerbeck A, Silva PHRD, Benedict RHB. Brief International Cognitive Assessment for Multiple Sclerosis (BICAMS): discrete and regression-based norms for the Brazilian context. Arq Neuropsiquiatr. 2022 Jan;80(1):62-68. doi: 10.1590/0004-282X-ANP-2020-0526.", align="L")
     
     file_name = f"{patient_name.replace(' ', '_')}_BICAMS_Report_{test_date.strftime('%Y-%m-%d')}.pdf"
     
