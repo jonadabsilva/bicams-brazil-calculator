@@ -135,7 +135,10 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
     pdf.multi_cell(190, 8, txt="Avaliação Cognitiva e Interpretação Normativa\n"
                                "BICAMS - Bateria Internacional Breve de Avaliação Cognitiva para Esclerose Múltipla", 
                   align="C")
-    
+
+    # Add a line before "Nome"
+    pdf.line(10, 35, 200, 35)  # Adjust the y-coordinates to fit the positioning in your PDF
+
     pdf.set_font("Arial", size=10)
     formatted_date = format_date(test_date)
     header_text = (f"Nome ou Código: {patient_name} | Sexo: {sex} | Idade: {age} anos\n"
@@ -146,6 +149,10 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
 
     for data in report_data:
         measure, z_score, percentile, fig, score_label = data
+
+        # Add a line before each test
+        pdf.line(10, pdf.get_y() + 2, 200, pdf.get_y() + 2)
+
         pdf.set_font("Arial", "B", size=10)
         pdf.cell(190, 6, txt=f"{measure}", ln=True, align="C")
         pdf.set_font("Arial", size=10)
@@ -157,6 +164,9 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
             fig.savefig(tmpfile.name, format="png", dpi=100)
             pdf.image(tmpfile.name, x=pdf.w / 2 - 75, y=None, w=150)  # Center the image horizontally using width
             os.unlink(tmpfile.name)  # Remove the temporary file after use
+
+    # Add a line before "Conversão normativa..."
+    pdf.line(10, pdf.get_y() + 2, 200, pdf.get_y() + 2)
 
     # Add the citation
     pdf.set_font("Arial", "I", size=8)
@@ -174,7 +184,6 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
     temp_pdf = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
     pdf.output(temp_pdf.name)
     return temp_pdf.name, file_name
-
 
 def main():
     st.title("Calculadora Normativa do BICAMS para a População Brasileira")
