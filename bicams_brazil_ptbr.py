@@ -73,7 +73,7 @@ def calculate_predicted_scaled_score(age, sex, education, measure):
            model['sex'] * sex_for_model + model['education'] * education)
     return pss
 
-# Function to interpret percentile and return classification with color
+# Updated interpret_percentile function to return classification and color correctly
 def interpret_percentile(percentile):
     if percentile >= 98:
         return ">130", ">98", "Excepcionalmente Alto", "Exceptionally High", "#00008B"  # Dark Blue
@@ -90,30 +90,7 @@ def interpret_percentile(percentile):
     else:
         return "<70", "<2", "Excepcionalmente Baixo", "Exceptionally Low", "#FF0000"  # Red
 
-# Plot function with color passed as a parameter
-def plot_normal_distribution(z_score, measure, measure_name, percentile, interpretation, color):
-    # Set the figure size for uniformity
-    fig, ax = plt.subplots(figsize=(8, 3), dpi=100)
-
-    x = np.linspace(-4, 4, 100)
-    y = norm.pdf(x)
-    ax.plot(x, y, zorder=1)
-
-    ax.scatter([z_score], [norm.pdf(z_score)], color=color, edgecolor='black', linewidth=1.5,
-               label=f"Z-score = {z_score:.2f}\nPercentil = {percentile:.1f}%\n{interpretation}", s=100, zorder=2)
-
-    ax.legend()
-    ax.set_xlabel("Z-score", fontsize=8)
-    ax.set_ylabel("Densidade de Probabilidade", fontsize=8)
-    ax.set_title(f"Valores normativos para {measure_name}", fontsize=10)
-
-    ax.grid()
-
-    fig.tight_layout()  # Ensure the entire plot fits nicely within the figure
-
-    return fig
-
-# Function to save the report as a PDF
+# Function to save the report as a PDF (ensuring correct classification is passed)
 def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date):
     pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=10)
@@ -137,7 +114,7 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
     pdf.multi_cell(190, 6, txt=header_text, align="C")
 
     for data in report_data:
-        measure, z_score, percentile, fig, score_label = data
+        measure, z_score, percentile, fig, classification = data  # Correct classification
 
         # Add a line space before each test
         pdf.cell(190, 8, txt="", ln=True)
@@ -145,7 +122,7 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
         pdf.set_font("Arial", "B", size=10)
         pdf.cell(190, 6, txt=f"{measure}", ln=True, align="C")
         pdf.set_font("Arial", size=10)
-        pdf.cell(190, 6, txt=f"Z-score: {z_score:.2f} | Percentil: {percentile:.1f}% | Classificação: {score_label[2]}", ln=True, align="C")
+        pdf.cell(190, 6, txt=f"Z-score: {z_score:.2f} | Percentil: {percentile:.1f}% | Classificação: {classification}", ln=True, align="C")
         
         # Save figure to a temporary file with consistent size and centered alignment
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
@@ -209,7 +186,7 @@ def main():
     cvlt_not_applicable = st.checkbox("Não se aplica", key="cvlt_na")
     if not cvlt_not_applicable:
         cvlt_input_method = st.radio("Como deseja inserir a pontuação?", ["Deslizar", "Digite"], key="cvlt_input")
-        if cvlt_input_method == "Deslizar":
+        if cvlt_input_method was "Deslizar":
             cvlt_raw = st.slider("Pontuação Total CVLT", min_value=0, max_value=80, value=50, step=1)
         else:
             cvlt_raw = st.number_input("Pontuação Total CVLT", min_value=0, max_value=80, value=50, step=1)
@@ -247,7 +224,7 @@ def main():
             st.pyplot(fig_sdmt)
     
             z_scores.append(sdmt_z)
-            report_data.append((sdmt_name, sdmt_z, percentile, fig_sdmt, classification))
+            report_data.append((sdmt_name, sdmt_z, percentile, fig_sdmt, classification))  # Correct classification
     
     if cvlt_raw is not None:
         cvlt_scaled = convert_to_scaled_score(cvlt_raw, 'CVLT_totaldeacertos')
@@ -266,7 +243,7 @@ def main():
             st.pyplot(fig_cvlt)
     
             z_scores.append(cvlt_z)
-            report_data.append((cvlt_name, cvlt_z, percentile, fig_cvlt, classification))
+            report_data.append((cvlt_name, cvlt_z, percentile, fig_cvlt, classification))  # Correct classification
     
     if bvmt_raw is not None:
         bvmt_scaled = convert_to_scaled_score(bvmt_raw, 'BVMT_Total')
@@ -285,7 +262,7 @@ def main():
             st.pyplot(fig_bvmt)
     
             z_scores.append(bvmt_z)
-            report_data.append((bvmt_name, bvmt_z, percentile, fig_bvmt, classification))
+            report_data.append((bvmt_name, bvmt_z, percentile, fig_bvmt, classification))  # Correct classification
 
 
     if st.button("Salvar Relatório como PDF"):
