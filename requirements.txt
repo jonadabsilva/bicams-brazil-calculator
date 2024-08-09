@@ -1,0 +1,7 @@
+numpy
+matplotlib
+scipy
+streamlit
+fpdf
+pillow
+
