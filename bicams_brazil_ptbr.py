@@ -90,6 +90,23 @@ def interpret_percentile(percentile):
     else:
         return "<70", "<2", "Excepcionalmente Baixo", "Exceptionally Low"
 
+# Função para mapear as cores com base na interpretação do percentil
+def get_color_based_on_percentile(percentile):
+    if percentile <= 2:
+        return "#8B00FF"  # Violet
+    elif 2 < percentile <= 8:
+        return "#FF0000"  # Red
+    elif 8 < percentile <= 24:
+        return "#FF4500"  # Orange
+    elif 24 < percentile <= 74:
+        return "#FFD700"  # Yellow
+    elif 74 < percentile <= 90:
+        return "#00FF00"  # Green
+    elif 90 < percentile <= 97:
+        return "#0000FF"  # Blue
+    else:
+        return "#00008B"  # Dark Blue
+
 def plot_normal_distribution(z_score, measure, measure_name, percentile, interpretation):
     # Set the figure size for uniformity
     fig, ax = plt.subplots(figsize=(8, 3), dpi=100)
@@ -98,7 +115,7 @@ def plot_normal_distribution(z_score, measure, measure_name, percentile, interpr
     y = norm.pdf(x)
     ax.plot(x, y, zorder=1)
 
-    dot_color = (0.2, 0.4, 0.6)  # Custom dot color
+    dot_color = get_color_based_on_percentile(percentile)
     ax.scatter([z_score], [norm.pdf(z_score)], color=dot_color, edgecolor='black', linewidth=1.5,
                label=f"Z-score = {z_score:.2f}\nPercentil = {percentile:.1f}%\n{interpretation}", s=100, zorder=2)
 
@@ -189,8 +206,8 @@ def main():
     test_date = st.date_input("Data do Teste", value=datetime.today())
 
     # Test names with abbreviations
-    cvlt_name = "California Verbal Learning Test (CVLT)"
-    bvmt_name = "Brief Visuospatial Memory Test (BVMT)"
+    cvlt_name = "California Verbal Learning Test - Second Edition (CVLT-II)"
+    bvmt_name = "Brief Visuospatial Memory Test - Revised (BVMT-R)"
     sdmt_name = "Symbol Digit Modalities Test (SDMT)"
 
     st.write(f"### {sdmt_name}")
