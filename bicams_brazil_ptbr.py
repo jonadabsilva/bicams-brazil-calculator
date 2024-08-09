@@ -93,19 +93,19 @@ def interpret_percentile(percentile):
 # Função para mapear as cores com base na interpretação do percentil
 def get_color_based_on_percentile(percentile):
     if percentile <= 2:
-        return "#FF0000"  # Red
+        return "#FF0000"  # Red for Exceptionally Low
     elif 2 < percentile <= 8:
-        return "#FF4500"  # Orange
+        return "#FF4500"  # Orange for Below Average
     elif 8 < percentile <= 24:
-        return "#FFD700"  # Yellow
-    elif 24 < percentile <= 74:
-        return "#00FF00"  # Green
+        return "#FFD700"  # Yellow for Low Average
+    elif 24 <= percentile <= 74:
+        return "#00FF00"  # Green for Average
     elif 74 < percentile <= 90:
-        return "#87CEEB"  # Light Blue
+        return "#00FFFF"  # Light Blue for High Average
     elif 90 < percentile <= 97:
-        return "#0000FF"  # Blue
+        return "#0000FF"  # Blue for Above Average
     else:
-        return "#00008B"  # Dark Blue
+        return "#00008B"  # Dark Blue for Exceptionally High
 
 def plot_normal_distribution(z_score, measure, measure_name, percentile, interpretation):
     # Set the figure size for uniformity
