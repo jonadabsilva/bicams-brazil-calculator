@@ -23,7 +23,7 @@ def format_date(date):
     year = date.strftime("%Y")
     return f"{day} {month} {year}"
 
-# Definir coeficientes do modelo de regressão e desvios padrão residuais para as medidas BICAMS
+# Define regression model coefficients and residual standard deviations for BICAMS measures
 regression_models = {
     'CVLT_totaldeacertos': {
         'constant': 8.512324, 'age': -0.14798, 'age2': 0.001373,
@@ -57,14 +57,14 @@ conversion_table = {
     }
 }
 
-# Função para converter pontuações brutas em pontuações escaladas
+# Function to convert raw scores into scaled scores
 def convert_to_scaled_score(raw_score, measure):
     for scaled_score, (low, high) in conversion_table[measure].items():
         if low <= raw_score <= high:
             return scaled_score
     return np.nan
 
-# Função para calcular pontuações escaladas previstas
+# Function to calculate predicted scaled scores
 def calculate_predicted_scaled_score(age, sex, education, measure):
     model = regression_models[measure]
     age2 = age ** 2
@@ -73,41 +73,25 @@ def calculate_predicted_scaled_score(age, sex, education, measure):
            model['sex'] * sex_for_model + model['education'] * education)
     return pss
 
-# Função para interpretar o percentil de acordo com a tabela, removendo "Pontuação" e ajustando os termos
+# Function to interpret percentile and return classification with color
 def interpret_percentile(percentile):
     if percentile > 98:
-        return ">130", ">98", "Excepcionalmente Alto", "Exceptionally High"  # Dark Blue
+        return ">130", ">98", "Excepcionalmente Alto", "Exceptionally High", "#00008B"  # Dark Blue
     elif 91 <= percentile <= 97:
-        return "120-129", "91-97", "Acima da Média", "Above Average"  # Blue
+        return "120-129", "91-97", "Acima da Média", "Above Average", "#0000FF"  # Blue
     elif 75 <= percentile <= 90:
-        return "110-119", "75-90", "Médio-Alto", "High Average"  # Light Blue
+        return "110-119", "75-90", "Médio-Alto", "High Average", "#00FFFF"  # Light Blue
     elif 25 <= percentile <= 74:
-        return "90-109", "25-74", "Médio", "Average"  # Green
+        return "90-109", "25-74", "Médio", "Average", "#00FF00"  # Green
     elif 9 <= percentile <= 24:
-        return "80-89", "9-24", "Médio-Baixo", "Low Average"  # Yellow
+        return "80-89", "9-24", "Médio-Baixo", "Low Average", "#FFD700"  # Yellow
     elif 2 <= percentile <= 8:
-        return "70-79", "2-8", "Abaixo da Média", "Below Average"  # Orange
+        return "70-79", "2-8", "Abaixo da Média", "Below Average", "#FF4500"  # Orange
     else:
-        return "<70", "<2", "Excepcionalmente Baixo", "Exceptionally Low"  # Red
+        return "<70", "<2", "Excepcionalmente Baixo", "Exceptionally Low", "#FF0000"  # Red
 
-# Função para mapear as cores com base na interpretação do percentil
-def get_color_based_on_percentile(percentile):
-    if percentile <= 2:
-        return "#FF0000"  # Red for Exceptionally Low
-    elif 2 < percentile <= 8:
-        return "#FF4500"  # Orange for Below Average
-    elif 8 < percentile <= 24:
-        return "#FFD700"  # Yellow for Low Average
-    elif 24 <= percentile <= 74:
-        return "#00FF00"  # Green for Average
-    elif 74 < percentile <= 90:
-        return "#00FFFF"  # Light Blue for High Average
-    elif 90 < percentile <= 97:
-        return "#0000FF"  # Blue for Above Average
-    else:
-        return "#00008B"  # Dark Blue for Exceptionally High
-
-def plot_normal_distribution(z_score, measure, measure_name, percentile, interpretation):
+# Function to plot the normal distribution and mark the Z-score
+def plot_normal_distribution(z_score, measure, measure_name, percentile, interpretation, color):
     # Set the figure size for uniformity
     fig, ax = plt.subplots(figsize=(8, 3), dpi=100)
 
@@ -115,8 +99,8 @@ def plot_normal_distribution(z_score, measure, measure_name, percentile, interpr
     y = norm.pdf(x)
     ax.plot(x, y, zorder=1)
 
-    dot_color = get_color_based_on_percentile(percentile)
-    ax.scatter([z_score], [norm.pdf(z_score)], color=dot_color, edgecolor='black', linewidth=1.5,
+    # Use the color passed as an argument to set the color of the dot
+    ax.scatter([z_score], [norm.pdf(z_score)], color=color, edgecolor='black', linewidth=1.5,
                label=f"Z-score = {z_score:.2f}\nPercentil = {percentile:.1f}%\n{interpretation}", s=100, zorder=2)
 
     ax.legend()
@@ -130,6 +114,7 @@ def plot_normal_distribution(z_score, measure, measure_name, percentile, interpr
 
     return fig
 
+# Function to save the report as a PDF
 def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date):
     pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=10)
@@ -260,7 +245,7 @@ def main():
             st.write(f"Percentil: {percentile:.1f}%")
             st.write(f"Classificação: {score_label[2]}")
 
-            fig_sdmt = plot_normal_distribution(sdmt_z, 'SDMT', sdmt_name, percentile, score_label[2])
+            fig_sdmt = plot_normal_distribution(sdmt_z, 'SDMT', sdmt_name, percentile, score_label[2], score_label[4])
             st.pyplot(fig_sdmt)
 
             z_scores.append(sdmt_z)
@@ -280,7 +265,7 @@ def main():
             st.write(f"Percentil: {percentile:.1f}%")
             st.write(f"Classificação: {score_label[2]}")
 
-            fig_cvlt = plot_normal_distribution(cvlt_z, 'CVLT_totaldeacertos', cvlt_name, percentile, score_label[2])
+            fig_cvlt = plot_normal_distribution(cvlt_z, 'CVLT_totaldeacertos', cvlt_name, percentile, score_label[2], score_label[4])
             st.pyplot(fig_cvlt)
 
             z_scores.append(cvlt_z)
@@ -300,7 +285,7 @@ def main():
             st.write(f"Percentil: {percentile:.1f}%")
             st.write(f"Classificação: {score_label[2]}")
 
-            fig_bvmt = plot_normal_distribution(bvmt_z, 'BVMT_Total', bvmt_name, percentile, score_label[2])
+            fig_bvmt = plot_normal_distribution(bvmt_z, 'BVMT_Total', bvmt_name, percentile, score_label[2], score_label[4])
             st.pyplot(fig_bvmt)
 
             z_scores.append(bvmt_z)
