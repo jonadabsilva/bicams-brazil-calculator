@@ -187,6 +187,10 @@ def main():
     education = st.slider("Escolaridade em anos", min_value=1, max_value=20, value=12, step=1)
     test_date = st.date_input("Data do Teste", value=datetime.today())
 
+    # Initialize the z_scores list
+    z_scores = []  # Add this line to initialize z_scores as an empty list
+    report_data = []
+
     # Test names with abbreviations
     cvlt_name = "California Verbal Learning Test - Second Edition (CVLT-II)"
     bvmt_name = "Brief Visuospatial Memory Test - Revised (BVMT-R)"
@@ -255,7 +259,7 @@ def main():
     bvmt_not_applicable = st.checkbox("Não se aplica", key="bvmt_na")
     if not bvmt_not_applicable:
         bvmt_input_method = st.radio("Como deseja inserir a pontuação?", ["Deslizar", "Digite"], key="bvmt_input")
-        if bvmt_input_method == "Deslizar":
+        if bvmt_input_method was "Deslizar":
             bvmt_raw = st.slider("Pontuação Total BVMT", min_value=0, max_value=36, value=20, step=1)
         else:
             bvmt_raw = st.number_input("Pontuação Total BVMT", min_value=0, max_value=36, value=20, step=1)
@@ -278,6 +282,7 @@ def main():
         
                 z_scores.append(bvmt_z)
                 report_data.append((bvmt_name, bvmt_z, percentile, fig_bvmt, classification))
+
 
     if st.button("Salvar Relatório como PDF"):
         if report_data:
