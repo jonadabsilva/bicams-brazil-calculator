@@ -155,9 +155,9 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
         
         # Save figure to a temporary file with consistent size and centered alignment
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
-            fig.set_size_inches(7.5, 2.75)  # Adjust the figure size for better fit and centering
+            fig.set_size_inches(7.5, 2.5)  # Adjust the figure size for better fit and centering
             fig.savefig(tmpfile.name, format="png", dpi=100)
-            pdf.image(tmpfile.name, x=(210 - 150) / 2, y=None, h=50)  # Center the image horizontally
+            pdf.image(tmpfile.name, x=pdf.w / 2 - 75, y=None, w=150)  # Center the image horizontally using width
             os.unlink(tmpfile.name)  # Remove the temporary file after use
         pdf.cell(190, 6, txt="", ln=True)
 
