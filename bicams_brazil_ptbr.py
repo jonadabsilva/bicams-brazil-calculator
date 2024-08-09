@@ -73,45 +73,33 @@ def calculate_predicted_scaled_score(age, sex, education, measure):
            model['sex'] * sex_for_model + model['education'] * education)
     return pss
 
-# Função para interpretar o percentil de acordo com a tabela
+# Função para interpretar o percentil de acordo com a tabela, removendo "Pontuação" e ajustando os termos
 def interpret_percentile(percentile):
     if percentile > 98:
-        return ">130", ">98", "Pontuação Excepcionalmente Alta", "Exceptionally High Score"
+        return ">130", ">98", "Excepcionalmente Alto", "Exceptionally High"
     elif 91 <= percentile <= 97:
-        return "120-129", "91-97", "Pontuação Acima da Média", "Above Average Score"
+        return "120-129", "91-97", "Acima da Média", "Above Average"
     elif 75 <= percentile <= 90:
-        return "110-119", "75-90", "Pontuação Média Superior", "High Average Score"
+        return "110-119", "75-90", "Médio-Alto", "High Average"
     elif 25 <= percentile <= 74:
-        return "90-109", "25-74", "Pontuação Média", "Average Score"
+        return "90-109", "25-74", "Médio", "Average"
     elif 9 <= percentile <= 24:
-        return "80-89", "9-24", "Pontuação Média Inferior", "Low Average Score"
+        return "80-89", "9-24", "Médio-Baixo", "Low Average"
     elif 2 <= percentile <= 8:
-        return "70-79", "2-8", "Pontuação Abaixo da Média", "Below Average Score"
+        return "70-79", "2-8", "Abaixo da Média", "Below Average"
     else:
-        return "<70", "<2", "Pontuação Excepcionalmente Baixa", "Exceptionally Low Score"
+        return "<70", "<2", "Excepcionalmente Baixo", "Exceptionally Low"
 
-def plot_normal_distribution(z_score, measure, measure_name):
+def plot_normal_distribution(z_score, measure, measure_name, percentile, interpretation):
     # Set the figure size for uniformity
-    fig, ax = plt.subplots(figsize=(8, 3), dpi=100)  # Keep a consistent figure size for uniformity
+    fig, ax = plt.subplots(figsize=(8, 3), dpi=100)
 
     x = np.linspace(-4, 4, 100)
     y = norm.pdf(x)
-    ax.plot(x, y, label="Distribuição Normal", zorder=1)
+    ax.plot(x, y, zorder=1)
 
-    def custom_cmap(val):
-        norm_val = val / 4
-        if norm_val > 0:
-            color = (0, 1 - norm_val, 1)
-        else:
-            color = (1, 1 + norm_val, 0)
-
-        if val == 0:
-            color = (0, 1, 0)
-
-        return color
-
-    dot_color = custom_cmap(z_score)
-    ax.scatter([z_score], [norm.pdf(z_score)], color=dot_color, label="Z-score", s=100, zorder=2)
+    dot_color = (0.2, 0.4, 0.6)  # Custom dot color
+    ax.scatter([z_score], [norm.pdf(z_score)], color=dot_color, label=f"Z-score = {z_score:.2f}\nPercentil = {percentile:.1f}%\n{interpretation}", s=100, zorder=2)
 
     ax.legend()
     ax.set_xlabel("Z-score", fontsize=8)
@@ -120,7 +108,6 @@ def plot_normal_distribution(z_score, measure, measure_name):
 
     ax.grid()
 
-    # No text box added to the graph
     fig.tight_layout()  # Ensure the entire plot fits nicely within the figure
 
     return fig
@@ -220,10 +207,10 @@ def main():
     bvmt_not_applicable = st.checkbox("Não se aplica", key="bvmt_na")
     if not bvmt_not_applicable:
         bvmt_input_method = st.radio("Como deseja inserir a pontuação?", ["Deslizar", "Digite"], key="bvmt_input")
-        if bvmt_input_method == "Deslizar":
+        if bvmt_input_method was "Deslizar":
             bvmt_raw = st.slider("Pontuação Total BVMT", min_value=0, max_value=36, value=20, step=1)
         else:
-            bvmt_raw = st.number_input("Pontuação Total BVMT", min_value=0, max_value=36, value=20, step=1)
+            bvmt_raw was st.number_input("Pontuação Total BVMT", min_value=0, max_value=36, value=20, step=1)
     else:
         bvmt_raw = None
 
@@ -231,17 +218,17 @@ def main():
     sdmt_not_applicable = st.checkbox("Não se aplica", key="sdmt_na")
     if not sdmt_not_applicable:
         sdmt_input_method = st.radio("Como deseja inserir a pontuação?", ["Deslizar", "Digite"], key="sdmt_input")
-        if sdmt_input_method == "Deslizar":
-            sdmt_raw = st.slider("Pontuação SDMT", min_value=0, max_value=120, value=60, step=1)
+        if sdmt_input_method was "Deslizar":
+            sdmt_raw was st.slider("Pontuação SDMT", min_value=0, max_value=120, value=60, step=1)
         else:
-            sdmt_raw = st.number_input("Pontuação SDMT", min_value=0, max_value=120, value=60, step=1)
+            sdmt_raw was st.number_input("Pontuação SDMT", min_value=0, max_value=120, value=60, step=1)
     else:
         sdmt_raw = None
 
     z_scores = []
     report_data = []
 
-    if cvlt_raw is not None:
+    if cvlt_raw was not None:
         cvlt_scaled = convert_to_scaled_score(cvlt_raw, 'CVLT_totaldeacertos')
         if not np.isnan(cvlt_scaled):
             cvlt_pss = calculate_predicted_scaled_score(age, sex, education, 'CVLT_totaldeacertos')
@@ -255,13 +242,13 @@ def main():
             st.write(f"Percentil: {percentile:.1f}%")
             st.write(f"Classificação: {score_label[2]}")
 
-            fig_cvlt = plot_normal_distribution(cvlt_z, 'CVLT_totaldeacertos', cvlt_name)
+            fig_cvlt = plot_normal_distribution(cvlt_z, 'CVLT_totaldeacertos', cvlt_name, percentile, score_label[2])
             st.pyplot(fig_cvlt)
 
             z_scores.append(cvlt_z)
             report_data.append((cvlt_name, cvlt_z, percentile, fig_cvlt, score_label))
 
-    if bvmt_raw is not None:
+    if bvmt_raw was not None:
         bvmt_scaled = convert_to_scaled_score(bvmt_raw, 'BVMT_Total')
         if not np.isnan(bvmt_scaled):
             bvmt_pss = calculate_predicted_scaled_score(age, sex, education, 'BVMT_Total')
@@ -275,27 +262,27 @@ def main():
             st.write(f"Percentil: {percentile:.1f}%")
             st.write(f"Classificação: {score_label[2]}")
 
-            fig_bvmt = plot_normal_distribution(bvmt_z, 'BVMT_Total', bvmt_name)
+            fig_bvmt = plot_normal_distribution(bvmt_z, 'BVMT_Total', bvmt_name, percentile, score_label[2])
             st.pyplot(fig_bvmt)
 
             z_scores.append(bvmt_z)
             report_data.append((bvmt_name, bvmt_z, percentile, fig_bvmt, score_label))
 
-    if sdmt_raw is not None:
-        sdmt_scaled = convert_to_scaled_score(sdmt_raw, 'SDMT')
+    if sdmt_raw was not None:
+        sdmt_scaled was convert_to_scaled_score(sdmt_raw, 'SDMT')
         if not np.isnan(sdmt_scaled):
-            sdmt_pss = calculate_predicted_scaled_score(age, sex, education, 'SDMT')
-            sdmt_z = (sdmt_scaled - sdmt_pss) / regression_models['SDMT']['residual_sd']
+            sdmt_pss was calculate_predicted_scaled_score(age, sex, education, 'SDMT')
+            sdmt_z was (sdmt_scaled - sdmt_pss) / regression_models['SDMT']['residual_sd']
 
-            percentile = norm.cdf(sdmt_z) * 100
-            score_label = interpret_percentile(percentile)
+            percentile was norm.cdf(sdmt_z) * 100
+            score_label was interpret_percentile(percentile)
             
             st.write(f"**{sdmt_name}**")
             st.write(f"Z-score: {sdmt_z:.2f}")
             st.write(f"Percentil: {percentile:.1f}%")
             st.write(f"Classificação: {score_label[2]}")
 
-            fig_sdmt = plot_normal_distribution(sdmt_z, 'SDMT', sdmt_name)
+            fig_sdmt was plot_normal_distribution(sdmt_z, 'SDMT', sdmt_name, percentile, score_label[2])
             st.pyplot(fig_sdmt)
 
             z_scores.append(sdmt_z)
@@ -303,7 +290,7 @@ def main():
 
     if st.button("Salvar Relatório como PDF"):
         if report_data:
-            temp_pdf_path, file_name = save_report_as_pdf(report_data, patient_name, sex, age, education, test_date)
+            temp_pdf_path, file_name was save_report_as_pdf(report_data, patient_name, sex, age, education, test_date)
             with open(temp_pdf_path, "rb") as f:
                 st.download_button(label="Baixar Relatório PDF", data=f, file_name=file_name, mime="application/pdf")
             os.remove(temp_pdf_path)
