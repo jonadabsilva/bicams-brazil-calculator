@@ -120,8 +120,8 @@ def plot_normal_distribution(z_score, measure, measure_name):
     ax.grid()
 
     # Criação de uma caixa de texto externa à curva
-    fig.subplots_adjust(right=0.78)  # Adjust closer to the graph
-    text_box = fig.add_axes([0.79, 0.1, 0.18, 0.8])  # Reduce distance and adjust width
+    fig.subplots_adjust(right=0.8)  # Adjust closer to the graph
+    text_box = fig.add_axes([0.81, 0.1, 0.17, 0.8])  # Reduce distance and adjust width
     text_box.axis('off')
     
     percentile = norm.cdf(z_score) * 100
@@ -158,7 +158,8 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
         # Save figure to a temporary file and insert into the PDF
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
             fig.savefig(tmpfile.name, format="png", dpi=100)
-            pdf.image(tmpfile.name, x=3, y=None, h=60)  # Set fixed height and allow width to vary
+            # Maintain the aspect ratio by setting the height and allowing the width to scale
+            pdf.image(tmpfile.name, x=10, y=None, h=60)
             os.unlink(tmpfile.name)  # Remove the temporary file after use
         pdf.cell(190, 6, txt="", ln=True)
 
@@ -193,7 +194,7 @@ def main():
     st.write("### CVLT (total de acertos)")
     cvlt_not_applicable = st.checkbox("Não se aplica", key="cvlt_na")
     if not cvlt_not_applicable:
-        cvlt_input_method = st.radio("Como deseja inserir a pontuação?", ["Deslizar", "Digitar"], key="cvlt_input")
+        cvlt_input_method = st.radio("Como deseja inserir a pontuação?", ["Deslizar", "Digite"], key="cvlt_input")
         if cvlt_input_method == "Deslizar":
             cvlt_raw = st.slider("Pontuação Total CVLT", min_value=0, max_value=80, value=50, step=1)
         else:
@@ -204,7 +205,7 @@ def main():
     st.write("### BVMT (total)")
     bvmt_not_applicable = st.checkbox("Não se aplica", key="bvmt_na")
     if not bvmt_not_applicable:
-        bvmt_input_method = st.radio("Como deseja inserir a pontuação?", ["Deslizar", "Digitar"], key="bvmt_input")
+        bvmt_input_method = st.radio("Como deseja inserir a pontuação?", ["Deslizar", "Digite"], key="bvmt_input")
         if bvmt_input_method == "Deslizar":
             bvmt_raw = st.slider("Pontuação Total BVMT", min_value=0, max_value=36, value=20, step=1)
         else:
@@ -215,7 +216,7 @@ def main():
     st.write("### SDMT")
     sdmt_not_applicable = st.checkbox("Não se aplica", key="sdmt_na")
     if not sdmt_not_applicable:
-        sdmt_input_method = st.radio("Como deseja inserir a pontuação?", ["Deslizar", "Digitar"], key="sdmt_input")
+        sdmt_input_method = st.radio("Como deseja inserir a pontuação?", ["Deslizar", "Digite"], key="sdmt_input")
         if sdmt_input_method == "Deslizar":
             sdmt_raw = st.slider("Pontuação SDMT", min_value=0, max_value=120, value=60, step=1)
         else:
