@@ -111,7 +111,7 @@ def plot_normal_distribution(z_score, measure, measure_name, percentile, interpr
 
     fig.tight_layout()  # Ensure the entire plot fits nicely within the figure
 
-    return fig
+    return fig 
 
 # Function to save the report as a PDF
 def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date):
