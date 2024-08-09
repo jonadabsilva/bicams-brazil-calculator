@@ -77,7 +77,7 @@ def interpret_percentile(percentile):
         return "<70", "<2", "Pontuação Excepcionalmente Baixa", "Exceptionally Low Score"
 
 def plot_normal_distribution(z_score, measure, measure_name):
-    fig, ax = plt.subplots(figsize=(10, 4))
+    fig, ax = plt.subplots(figsize=(8, 3))
 
     x = np.linspace(-4, 4, 100)
     y = norm.pdf(x)
@@ -99,54 +99,58 @@ def plot_normal_distribution(z_score, measure, measure_name):
     ax.scatter([z_score], [norm.pdf(z_score)], color=dot_color, label="Z-score", s=100, zorder=2)
 
     ax.legend()
-    ax.set_xlabel("Z-score")
-    ax.set_ylabel("Densidade de Probabilidade")
-    ax.set_title(f"Valores normativos para {measure_name}")
+    ax.set_xlabel("Z-score", fontsize=8)
+    ax.set_ylabel("Densidade de Probabilidade", fontsize=8)
+    ax.set_title(f"Valores normativos para {measure_name}", fontsize=10)
 
     ax.grid()
 
     # Criação de uma caixa de texto externa à curva
-    fig.subplots_adjust(right=0.7)  # Ajusta para dar espaço à caixa de texto
-    text_box = fig.add_axes([0.75, 0.1, 0.2, 0.8])  # Adiciona uma área para a caixa de texto
+    fig.subplots_adjust(right=0.75)  # Ajusta para dar espaço à caixa de texto
+    text_box = fig.add_axes([0.8, 0.1, 0.18, 0.8])  # Adiciona uma área para a caixa de texto
     text_box.axis('off')
     
     percentile = norm.cdf(z_score) * 100
     score_label = interpret_percentile(percentile)
     
-    text_box.text(0.1, 0.8, f"Z-score: {z_score:.2f}", fontsize=10, verticalalignment='top')
-    text_box.text(0.1, 0.6, f"Percentil: {percentile:.1f}%", fontsize=10, verticalalignment='top')
-    text_box.text(0.1, 0.4, f"Classificação: {score_label[2]}", fontsize=10, verticalalignment='top')
+    text_box.text(0.1, 0.8, f"Z-score: {z_score:.2f}", fontsize=8, verticalalignment='top')
+    text_box.text(0.1, 0.6, f"Percentil: {percentile:.1f}%", fontsize=8, verticalalignment='top')
+    text_box.text(0.1, 0.4, f"Classificação: {score_label[2]}", fontsize=8, verticalalignment='top')
 
     return fig
 
 def save_report_as_pdf(report_data, patient_name, test_date):
     pdf = FPDF()
-    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.set_auto_page_break(auto=True, margin=10)
     pdf.add_page()
 
-    pdf.set_font("Arial", "B", 16)
-    pdf.cell(190, 10, txt="Relatório BICAMS", ln=True, align="C")
+    pdf.set_font("Arial", "B", 12)
+    pdf.cell(190, 8, txt="Relatório BICAMS", ln=True, align="C")
     
-    pdf.set_font("Arial", size=12)
-    pdf.cell(190, 10, txt=f"Paciente: {patient_name}", ln=True)
-    pdf.cell(190, 10, txt=f"Data do Teste: {test_date.strftime('%d/%m/%Y')}", ln=True)
-    pdf.cell(190, 10, txt="", ln=True)
+    pdf.set_font("Arial", size=10)
+    pdf.cell(190, 6, txt=f"Paciente: {patient_name}", ln=True)
+    pdf.cell(190, 6, txt=f"Data do Teste: {test_date.strftime('%d/%m/%Y')}", ln=True)
+    pdf.cell(190, 6, txt="", ln=True)
 
     for data in report_data:
         measure, z_score, percentile, fig, score_label = data
-        pdf.cell(190, 10, txt=f"Teste: {measure}", ln=True)
-        pdf.cell(190, 10, txt=f"Z-score: {z_score:.2f}", ln=True)
-        pdf.cell(190, 10, txt=f"Percentil: {percentile:.1f}%", ln=True)
-        pdf.cell(190, 10, txt=f"Classificação: {score_label[2]}", ln=True)
-        pdf.cell(190, 10, txt="", ln=True)
+        pdf.set_font("Arial", size=10)
+        pdf.cell(190, 6, txt=f"Teste: {measure}", ln=True)
+        pdf.cell(190, 6, txt=f"Z-score: {z_score:.2f} | Percentil: {percentile:.1f}% | Classificação: {score_label[2]}", ln=True)
+        pdf.cell(190, 6, txt="", ln=True)
         
         # Save figure to a temporary file and insert into the PDF
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
-            fig.savefig(tmpfile.name, format="png")
-            pdf.image(tmpfile.name, x=10, y=None, w=190)
+            fig.savefig(tmpfile.name, format="png", dpi=100)
+            pdf.image(tmpfile.name, x=10, y=None, w=150)  # Make the image smaller
             os.unlink(tmpfile.name)  # Remove the temporary file after use
-        pdf.cell(190, 10, txt="", ln=True)
+        pdf.cell(190, 6, txt="", ln=True)
 
+    # Add the citation
+    pdf.cell(190, 6, txt="", ln=True)
+    pdf.set_font("Arial", "I", size=8)
+    pdf.multi_cell(190, 4, txt="Fonte dos dados normativos: Spedo CT, Pereira DA, Frndak SE, Marques VD, Barreira AA, Smerbeck A, Silva PHRD, Benedict RHB. Brief International Cognitive Assessment for Multiple Sclerosis (BICAMS): discrete and regression-based norms for the Brazilian context. Arq Neuropsiquiatr. 2022 Jan;80(1):62-68. doi: 10.1590/0004-282X-ANP-2020-0526.", align="L")
+    
     file_name = f"{patient_name.replace(' ', '_')}_BICAMS_Report_{test_date.strftime('%Y-%m-%d')}.pdf"
     
     # Save PDF to a temporary file
