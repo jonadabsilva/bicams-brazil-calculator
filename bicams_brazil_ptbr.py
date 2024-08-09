@@ -142,7 +142,7 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
     for data in report_data:
         measure, z_score, percentile, fig, score_label = data
         pdf.set_font("Arial", "B", size=10)
-        pdf.cell(190, 6, txt=f"Teste: {measure}", ln=True)
+        pdf.cell(190, 6, txt=f"{measure}", ln=True)
         pdf.set_font("Arial", size=10)
         pdf.cell(190, 6, txt=f"Z-score: {z_score:.2f} | Percentil: {percentile:.1f}% | Classificação: {score_label[2]}", ln=True)
         pdf.cell(190, 6, txt="", ln=True)
