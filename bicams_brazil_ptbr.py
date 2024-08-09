@@ -295,5 +295,15 @@ def main():
         else:
             st.warning("Nenhum teste foi realizado.")
 
+
+    # Add comments about the author and how to cite the calculator
+    st.write("---")
+    st.write("**Conversão normativa utilizando a Calculadora Normativa do BICAMS para a População Brasileira, desenvolvida por Jonadab dos Santos Silva.**")
+    st.write("Disponível em [Calculadora Normativa do BICAMS](https://bicams-brazil-calculator.streamlit.app/).")
+
+    # Add the source of the normative data
+    st.write("**Fonte dos dados normativos:**")
+    st.write("Spedo CT, Pereira DA, Frndak SE, Marques VD, Barreira AA, Smerbeck A, Silva PHRD, Benedict RHB. Brief International Cognitive Assessment for Multiple Sclerosis (BICAMS): discrete and regression-based norms for the Brazilian context. *Arq Neuropsiquiatr.* 2022 Jan;80(1):62-68. doi: [10.1590/0004-282X-ANP-2020-0526](https://doi.org/10.1590/0004-282X-ANP-2020-0526).")
+
 if __name__ == "__main__":
     main()
