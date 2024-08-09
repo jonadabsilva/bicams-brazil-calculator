@@ -197,6 +197,7 @@ def main():
     sdmt_name = "Symbol Digit Modalities Test (SDMT)"
 
     # Process SDMT
+    st.write("---")  # Add a line before each test
     st.write(f"### {sdmt_name}")
     sdmt_not_applicable = st.checkbox("Não se aplica", key="sdmt_na")
     if not sdmt_not_applicable:
@@ -218,14 +219,15 @@ def main():
                 st.write(f"Z-score: {sdmt_z:.2f}")
                 st.write(f"Percentil: {percentile:.1f}%")
                 st.write(f"Classificação: {classification}")
-        
+    
                 fig_sdmt = plot_normal_distribution(sdmt_z, 'SDMT', sdmt_name, percentile, classification, color)
                 st.pyplot(fig_sdmt)
-        
+    
                 z_scores.append(sdmt_z)
                 report_data.append((sdmt_name, sdmt_z, percentile, fig_sdmt, classification))
 
     # Process CVLT
+    st.write("---")  # Add a line before each test
     st.write(f"### {cvlt_name}")
     cvlt_not_applicable = st.checkbox("Não se aplica", key="cvlt_na")
     if not cvlt_not_applicable:
@@ -247,14 +249,15 @@ def main():
                 st.write(f"Z-score: {cvlt_z:.2f}")
                 st.write(f"Percentil: {percentile:.1f}%")
                 st.write(f"Classificação: {classification}")
-        
+    
                 fig_cvlt = plot_normal_distribution(cvlt_z, 'CVLT_totaldeacertos', cvlt_name, percentile, classification, color)
                 st.pyplot(fig_cvlt)
-        
+    
                 z_scores.append(cvlt_z)
                 report_data.append((cvlt_name, cvlt_z, percentile, fig_cvlt, classification))
 
     # Process BVMT
+    st.write("---")  # Add a line before each test
     st.write(f"### {bvmt_name}")
     bvmt_not_applicable = st.checkbox("Não se aplica", key="bvmt_na")
     if not bvmt_not_applicable:
@@ -276,10 +279,10 @@ def main():
                 st.write(f"Z-score: {bvmt_z:.2f}")
                 st.write(f"Percentil: {percentile:.1f}%")
                 st.write(f"Classificação: {classification}")
-        
+    
                 fig_bvmt = plot_normal_distribution(bvmt_z, 'BVMT_Total', bvmt_name, percentile, classification, color)
                 st.pyplot(fig_bvmt)
-        
+    
                 z_scores.append(bvmt_z)
                 report_data.append((bvmt_name, bvmt_z, percentile, fig_bvmt, classification))
 
