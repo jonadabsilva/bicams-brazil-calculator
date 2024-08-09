@@ -171,10 +171,14 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
     # Centralize the citation text block
     pdf.set_font("Arial", "I", size=8)
     pdf.multi_cell(190, 4, txt="Conversão normativa utilizando a *Calculadora Normativa do BICAMS para a População Brasileira*, desenvolvida por Jonadab dos Santos Silva.", align="C")
+    
+    # Use cell for the hyperlink to avoid issues with multi_cell
     pdf.set_text_color(0, 0, 255)
     pdf.set_font("Arial", "U", 8)
-    pdf.multi_cell(190, 4, txt="Disponível em https://bicams-brazil-calculator.streamlit.app/", ln=True, link="https://bicams-brazil-calculator.streamlit.app/", align="C")
+    pdf.cell(0, 4, "Disponível em https://bicams-brazil-calculator.streamlit.app/", ln=True, link="https://bicams-brazil-calculator.streamlit.app/", align="C")
     pdf.set_text_color(0, 0, 0)
+    
+    # Continue with multi_cell for the remaining text
     pdf.set_font("Arial", "I", size=8)
     pdf.multi_cell(190, 4, txt="Fonte dos dados normativos: Spedo CT, Pereira DA, Frndak SE, Marques VD, Barreira AA, Smerbeck A, Silva PHRD, Benedict RHB. Brief International Cognitive Assessment for Multiple Sclerosis (BICAMS): discrete and regression-based norms for the Brazilian context. Arq Neuropsiquiatr. 2022 Jan;80(1):62-68. doi: 10.1590/0004-282X-ANP-2020-0526.", align="C")
     
@@ -184,6 +188,7 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
     temp_pdf = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
     pdf.output(temp_pdf.name)
     return temp_pdf.name, file_name
+
 
 def main():
     st.title("Calculadora Normativa do BICAMS para a População Brasileira")
