@@ -8,10 +8,20 @@ from fpdf import FPDF
 from PIL import Image
 import io
 import tempfile
-import locale
 
-# Set locale to Brazilian Portuguese for date formatting
-locale.setlocale(locale.LC_TIME, 'pt_BR.utf8')
+# Map English month names to Portuguese month names
+months_pt = {
+    "January": "Janeiro", "February": "Fevereiro", "March": "Março",
+    "April": "Abril", "May": "Maio", "June": "Junho",
+    "July": "Julho", "August": "Agosto", "September": "Setembro",
+    "October": "Outubro", "November": "Novembro", "December": "Dezembro"
+}
+
+def format_date(date):
+    day = date.strftime("%-d")
+    month = months_pt[date.strftime("%B")]
+    year = date.strftime("%Y")
+    return f"{day} {month} {year}"
 
 # Definir coeficientes do modelo de regressão e desvios padrão residuais para as medidas BICAMS
 regression_models = {
@@ -132,7 +142,7 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
     pdf.cell(190, 8, txt="Relatório BICAMS", ln=True, align="C")
     
     pdf.set_font("Arial", size=10)
-    formatted_date = test_date.strftime("%-d %B %Y").capitalize()
+    formatted_date = format_date(test_date)
     pdf.multi_cell(190, 6, txt=f"Nome ou Código: {patient_name} | Sexo: {sex} | Idade: {age} anos | Escolaridade: {education} anos | Data do Teste: {formatted_date}", ln=True)
     pdf.cell(190, 6, txt="", ln=True)
 
