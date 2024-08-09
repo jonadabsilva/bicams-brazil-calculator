@@ -75,20 +75,21 @@ def calculate_predicted_scaled_score(age, sex, education, measure):
 
 # Função para interpretar o percentil de acordo com a tabela, removendo "Pontuação" e ajustando os termos
 def interpret_percentile(percentile):
+def interpret_percentile(percentile):
     if percentile > 98:
-        return ">130", ">98", "Excepcionalmente Alto", "Exceptionally High"
+        return ">130", ">98", "Excepcionalmente Alto", "Exceptionally High"  # Dark Blue
     elif 91 <= percentile <= 97:
-        return "120-129", "91-97", "Acima da Média", "Above Average"
+        return "120-129", "91-97", "Acima da Média", "Above Average"  # Blue
     elif 75 <= percentile <= 90:
-        return "110-119", "75-90", "Médio-Alto", "High Average"
+        return "110-119", "75-90", "Médio-Alto", "High Average"  # Light Blue
     elif 25 <= percentile <= 74:
-        return "90-109", "25-74", "Médio", "Average"
+        return "90-109", "25-74", "Médio", "Average"  # Green
     elif 9 <= percentile <= 24:
-        return "80-89", "9-24", "Médio-Baixo", "Low Average"
+        return "80-89", "9-24", "Médio-Baixo", "Low Average"  # Yellow
     elif 2 <= percentile <= 8:
-        return "70-79", "2-8", "Abaixo da Média", "Below Average"
+        return "70-79", "2-8", "Abaixo da Média", "Below Average"  # Orange
     else:
-        return "<70", "<2", "Excepcionalmente Baixo", "Exceptionally Low"
+        return "<70", "<2", "Excepcionalmente Baixo", "Exceptionally Low"  # Red
 
 # Função para mapear as cores com base na interpretação do percentil
 def get_color_based_on_percentile(percentile):
