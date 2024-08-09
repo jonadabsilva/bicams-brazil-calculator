@@ -77,7 +77,7 @@ def interpret_percentile(percentile):
         return "<70", "<2", "Pontuação Excepcionalmente Baixa", "Exceptionally Low Score"
 
 def plot_normal_distribution(z_score, measure, measure_name):
-    fig, ax = plt.subplots(figsize=(8, 3))
+    fig, ax = plt.subplots(figsize=(7, 2.5))
 
     x = np.linspace(-4, 4, 100)
     y = norm.pdf(x)
@@ -134,15 +134,16 @@ def save_report_as_pdf(report_data, patient_name, test_date):
 
     for data in report_data:
         measure, z_score, percentile, fig, score_label = data
-        pdf.set_font("Arial", size=10)
+        pdf.set_font("Arial", "B", size=10)
         pdf.cell(190, 6, txt=f"Teste: {measure}", ln=True)
+        pdf.set_font("Arial", size=10)
         pdf.cell(190, 6, txt=f"Z-score: {z_score:.2f} | Percentil: {percentile:.1f}% | Classificação: {score_label[2]}", ln=True)
         pdf.cell(190, 6, txt="", ln=True)
         
         # Save figure to a temporary file and insert into the PDF
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
             fig.savefig(tmpfile.name, format="png", dpi=100)
-            pdf.image(tmpfile.name, x=10, y=None, w=150)  # Make the image smaller
+            pdf.image(tmpfile.name, x=10, y=None, w=140)  # Make the image smaller
             os.unlink(tmpfile.name)  # Remove the temporary file after use
         pdf.cell(190, 6, txt="", ln=True)
 
