@@ -120,8 +120,8 @@ def plot_normal_distribution(z_score, measure, measure_name):
     ax.grid()
 
     # Criação de uma caixa de texto externa à curva
-    fig.subplots_adjust(right=0.75)  # Ajusta para dar espaço à caixa de texto
-    text_box = fig.add_axes([0.8, 0.1, 0.18, 0.8])  # Adiciona uma área para a caixa de texto
+    fig.subplots_adjust(right=0.7)  # Ajusta para dar espaço à caixa de texto
+    text_box = fig.add_axes([0.72, 0.1, 0.18, 0.72])  # Adiciona uma área para a caixa de texto
     text_box.axis('off')
     
     percentile = norm.cdf(z_score) * 100
