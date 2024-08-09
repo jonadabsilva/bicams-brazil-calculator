@@ -91,7 +91,8 @@ def interpret_percentile(percentile):
         return "<70", "<2", "Pontuação Excepcionalmente Baixa", "Exceptionally Low Score"
 
 def plot_normal_distribution(z_score, measure, measure_name):
-    fig, ax = plt.subplots(figsize=(6, 2.5))
+    # Set a consistent figure size and DPI for uniformity
+    fig, ax = plt.subplots(figsize=(6, 3), dpi=100)  # Set a consistent figure size and DPI
 
     x = np.linspace(-4, 4, 100)
     y = norm.pdf(x)
@@ -119,9 +120,10 @@ def plot_normal_distribution(z_score, measure, measure_name):
 
     ax.grid()
 
-    # Criação de uma caixa de texto externa à curva
-    fig.subplots_adjust(right=0.8)  # Adjust closer to the graph
-    text_box = fig.add_axes([0.81, 0.1, 0.17, 0.8])  # Reduce distance and adjust width
+    # Adjust layout to fit all content
+    fig.tight_layout(rect=[0, 0, 0.8, 1])
+    
+    text_box = fig.add_axes([0.82, 0.1, 0.16, 0.8])  # Further reduce the text box width
     text_box.axis('off')
     
     percentile = norm.cdf(z_score) * 100
@@ -155,11 +157,11 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
         pdf.cell(190, 6, txt=f"Z-score: {z_score:.2f} | Percentil: {percentile:.1f}% | Classificação: {score_label[2]}", ln=True)
         pdf.cell(190, 6, txt="", ln=True)
         
-        # Save figure to a temporary file and insert into the PDF
+        # Save figure to a temporary file with consistent size
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
+            fig.set_size_inches(6, 3)  # Set consistent figure size for saving
             fig.savefig(tmpfile.name, format="png", dpi=100)
-            # Ensure the image fits within the page without cropping
-            pdf.image(tmpfile.name, x=10, y=None, w=190)  # Use full width of the PDF page to prevent cropping
+            pdf.image(tmpfile.name, x=10, y=None, w=190)  # Fit to page width without cropping
             os.unlink(tmpfile.name)  # Remove the temporary file after use
         pdf.cell(190, 6, txt="", ln=True)
 
