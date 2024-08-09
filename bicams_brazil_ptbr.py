@@ -153,21 +153,21 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
         pdf.cell(190, 6, txt=f"Z-score: {z_score:.2f} | Percentil: {percentile:.1f}% | Classificação: {score_label[2]}", ln=True, align="C")
         pdf.cell(190, 6, txt="", ln=True)
         
-        # Save figure to a temporary file with consistent size
+        # Save figure to a temporary file with consistent size and centered alignment
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
             fig.set_size_inches(8, 3)  # Consistent figure size for saving
             fig.savefig(tmpfile.name, format="png", dpi=100)
-            pdf.image(tmpfile.name, x=8, y=None, h=50)  # Fit to page width without cropping
+            pdf.image(tmpfile.name, x=(210 - 160) / 2, y=None, h=50)  # Center the image horizontally
             os.unlink(tmpfile.name)  # Remove the temporary file after use
         pdf.cell(190, 6, txt="", ln=True)
 
     # Add the citation
     pdf.cell(190, 6, txt="", ln=True)
     pdf.set_font("Arial", "I", size=8)
-    pdf.multi_cell(190, 4, txt="Conversão normativa utilizando a *Calculadora Normativa do BICAMS para a População Brasileira*, desenvolvida por Jonadab dos Santos Silva. Disponível em https://bicams-brazil-calculator.streamlit.app/", align="C")
+    pdf.multi_cell(190, 4, txt="Conversão normativa utilizando a *Calculadora Normativa do BICAMS para a População Brasileira*, desenvolvida por Jonadab dos Santos Silva.", align="C")
     pdf.set_text_color(0, 0, 255)
     pdf.set_font("Arial", "U", 8)
-    pdf.cell(0, 4, "https://bicams-brazil-calculator.streamlit.app/", ln=True, link="https://bicams-brazil-calculator.streamlit.app/", align="C")
+    pdf.cell(0, 4, "Disponível em https://bicams-brazil-calculator.streamlit.app/", ln=True, link="https://bicams-brazil-calculator.streamlit.app/", align="C")
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("Arial", "I", size=8)
     pdf.multi_cell(190, 4, txt="Fonte dos dados normativos: Spedo CT, Pereira DA, Frndak SE, Marques VD, Barreira AA, Smerbeck A, Silva PHRD, Benedict RHB. Brief International Cognitive Assessment for Multiple Sclerosis (BICAMS): discrete and regression-based norms for the Brazilian context. Arq Neuropsiquiatr. 2022 Jan;80(1):62-68. doi: 10.1590/0004-282X-ANP-2020-0526.", align="L")
