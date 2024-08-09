@@ -143,7 +143,6 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
     
     # Centralize the header text
     pdf.multi_cell(190, 6, txt=header_text, align="C")
-    pdf.cell(190, 6, txt="", ln=True)
 
     for data in report_data:
         measure, z_score, percentile, fig, score_label = data
@@ -151,7 +150,6 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
         pdf.cell(190, 6, txt=f"{measure}", ln=True, align="C")
         pdf.set_font("Arial", size=10)
         pdf.cell(190, 6, txt=f"Z-score: {z_score:.2f} | Percentil: {percentile:.1f}% | Classificação: {score_label[2]}", ln=True, align="C")
-        pdf.cell(190, 6, txt="", ln=True)
         
         # Save figure to a temporary file with consistent size and centered alignment
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
@@ -159,10 +157,8 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
             fig.savefig(tmpfile.name, format="png", dpi=100)
             pdf.image(tmpfile.name, x=pdf.w / 2 - 75, y=None, w=150)  # Center the image horizontally using width
             os.unlink(tmpfile.name)  # Remove the temporary file after use
-        pdf.cell(190, 6, txt="", ln=True)
 
     # Add the citation
-    pdf.cell(190, 6, txt="", ln=True)
     pdf.set_font("Arial", "I", size=8)
     pdf.multi_cell(190, 4, txt="Conversão normativa utilizando a *Calculadora Normativa do BICAMS para a População Brasileira*, desenvolvida por Jonadab dos Santos Silva.", align="C")
     pdf.set_text_color(0, 0, 255)
