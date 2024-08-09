@@ -8,6 +8,10 @@ from fpdf import FPDF
 from PIL import Image
 import io
 import tempfile
+import locale
+
+# Set locale to Brazilian Portuguese for date formatting
+locale.setlocale(locale.LC_TIME, 'pt_BR.utf8')
 
 # Definir coeficientes do modelo de regressão e desvios padrão residuais para as medidas BICAMS
 regression_models = {
@@ -119,7 +123,7 @@ def plot_normal_distribution(z_score, measure, measure_name):
 
     return fig
 
-def save_report_as_pdf(report_data, patient_name, test_date):
+def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date):
     pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=10)
     pdf.add_page()
@@ -128,8 +132,8 @@ def save_report_as_pdf(report_data, patient_name, test_date):
     pdf.cell(190, 8, txt="Relatório BICAMS", ln=True, align="C")
     
     pdf.set_font("Arial", size=10)
-    pdf.cell(190, 6, txt=f"Paciente: {patient_name}", ln=True)
-    pdf.cell(190, 6, txt=f"Data do Teste: {test_date.strftime('%d/%m/%Y')}", ln=True)
+    formatted_date = test_date.strftime("%-d %B %Y").capitalize()
+    pdf.multi_cell(190, 6, txt=f"Nome ou Código: {patient_name} | Sexo: {sex} | Idade: {age} anos | Escolaridade: {education} anos | Data do Teste: {formatted_date}", ln=True)
     pdf.cell(190, 6, txt="", ln=True)
 
     for data in report_data:
@@ -150,6 +154,12 @@ def save_report_as_pdf(report_data, patient_name, test_date):
     # Add the citation
     pdf.cell(190, 6, txt="", ln=True)
     pdf.set_font("Arial", "I", size=8)
+    pdf.multi_cell(190, 4, txt="Conversão normativa utilizando a *Calculadora Normativa do BICAMS para a População Brasileira*, desenvolvida por Jonadab dos Santos Silva. Disponível em ", align="L")
+    pdf.set_text_color(0, 0, 255)
+    pdf.set_font("Arial", "U", 8)
+    pdf.cell(0, 4, "https://bicams-brazil-calculator.streamlit.app/", ln=True, link="https://bicams-brazil-calculator.streamlit.app/")
+    pdf.set_text_color(0, 0, 0)
+    pdf.set_font("Arial", "I", size=8)
     pdf.multi_cell(190, 4, txt="Fonte dos dados normativos: Spedo CT, Pereira DA, Frndak SE, Marques VD, Barreira AA, Smerbeck A, Silva PHRD, Benedict RHB. Brief International Cognitive Assessment for Multiple Sclerosis (BICAMS): discrete and regression-based norms for the Brazilian context. Arq Neuropsiquiatr. 2022 Jan;80(1):62-68. doi: 10.1590/0004-282X-ANP-2020-0526.", align="L")
     
     file_name = f"{patient_name.replace(' ', '_')}_BICAMS_Report_{test_date.strftime('%Y-%m-%d')}.pdf"
@@ -163,11 +173,10 @@ def main():
     st.title("Calculadora Normativa do BICAMS para a População Brasileira")
 
     patient_name = st.text_input("Nome ou Código do Paciente")
-    test_date = st.date_input("Data do Teste", value=datetime.today())
-
+    sex = st.selectbox("Sexo", ["M", "F"])
     age = st.slider("Idade em anos", min_value=18, max_value=100, value=40, step=1)
     education = st.slider("Escolaridade em anos", min_value=1, max_value=20, value=12, step=1)
-    sex = st.selectbox("Sexo", ["masculino", "feminino"])
+    test_date = st.date_input("Data do Teste", value=datetime.today())
 
     st.write("### CVLT (total de acertos)")
     cvlt_not_applicable = st.checkbox("Não se aplica", key="cvlt_na")
@@ -261,7 +270,7 @@ def main():
 
     if st.button("Salvar Relatório como PDF"):
         if report_data:
-            temp_pdf_path, file_name = save_report_as_pdf(report_data, patient_name, test_date)
+            temp_pdf_path, file_name = save_report_as_pdf(report_data, patient_name, sex, age, education, test_date)
             with open(temp_pdf_path, "rb") as f:
                 st.download_button(label="Baixar Relatório PDF", data=f, file_name=file_name, mime="application/pdf")
             os.remove(temp_pdf_path)
