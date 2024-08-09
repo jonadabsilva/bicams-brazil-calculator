@@ -75,7 +75,6 @@ def calculate_predicted_scaled_score(age, sex, education, measure):
 
 # Função para interpretar o percentil de acordo com a tabela, removendo "Pontuação" e ajustando os termos
 def interpret_percentile(percentile):
-def interpret_percentile(percentile):
     if percentile > 98:
         return ">130", ">98", "Excepcionalmente Alto", "Exceptionally High"  # Dark Blue
     elif 91 <= percentile <= 97:
