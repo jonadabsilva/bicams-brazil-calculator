@@ -136,8 +136,8 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
                                "BICAMS - Bateria Internacional Breve de Avaliação Cognitiva para Esclerose Múltipla", 
                   align="C")
 
-    # Add a line before "Nome"
-    pdf.line(10, 35, 200, 35)  # Adjust the y-coordinates to fit the positioning in your PDF
+    # Add a line space before "Nome"
+    pdf.cell(190, 8, txt="", ln=True)
 
     pdf.set_font("Arial", size=10)
     formatted_date = format_date(test_date)
@@ -150,8 +150,8 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
     for data in report_data:
         measure, z_score, percentile, fig, score_label = data
 
-        # Add a line before each test
-        pdf.line(10, pdf.get_y() + 2, 200, pdf.get_y() + 2)
+        # Add a line space before each test
+        pdf.cell(190, 8, txt="", ln=True)
 
         pdf.set_font("Arial", "B", size=10)
         pdf.cell(190, 6, txt=f"{measure}", ln=True, align="C")
@@ -165,8 +165,8 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
             pdf.image(tmpfile.name, x=pdf.w / 2 - 75, y=None, w=150)  # Center the image horizontally using width
             os.unlink(tmpfile.name)  # Remove the temporary file after use
 
-    # Add a line before "Conversão normativa..."
-    pdf.line(10, pdf.get_y() + 2, 200, pdf.get_y() + 2)
+    # Add a line space before "Conversão normativa..."
+    pdf.cell(190, 8, txt="", ln=True)
 
     # Add the citation
     pdf.set_font("Arial", "I", size=8)
