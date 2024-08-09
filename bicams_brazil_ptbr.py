@@ -151,7 +151,7 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
             fig.set_size_inches(8, 3)  # Consistent figure size for saving
             fig.savefig(tmpfile.name, format="png", dpi=100)
-            pdf.image(tmpfile.name, x=8, y=None, w=190)  # Fit to page width without cropping
+            pdf.image(tmpfile.name, x=8, y=None, h=50)  # Fit to page width without cropping
             os.unlink(tmpfile.name)  # Remove the temporary file after use
         pdf.cell(190, 6, txt="", ln=True)
 
