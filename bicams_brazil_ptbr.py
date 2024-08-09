@@ -91,7 +91,7 @@ def interpret_percentile(percentile):
         return "<70", "<2", "Pontuação Excepcionalmente Baixa", "Exceptionally Low Score"
 
 def plot_normal_distribution(z_score, measure, measure_name):
-    fig, ax = plt.subplots(figsize=(6.5, 2.5))
+    fig, ax = plt.subplots(figsize=(6, 2.5))
 
     x = np.linspace(-4, 4, 100)
     y = norm.pdf(x)
@@ -120,8 +120,8 @@ def plot_normal_distribution(z_score, measure, measure_name):
     ax.grid()
 
     # Criação de uma caixa de texto externa à curva
-    fig.subplots_adjust(right=0.75)  # Ajusta para dar espaço à caixa de texto
-    text_box = fig.add_axes([0.8, 0.1, 0.18, 0.8])  # Adiciona uma área para a caixa de texto
+    fig.subplots_adjust(right=0.78)  # Adjust closer to the graph
+    text_box = fig.add_axes([0.79, 0.1, 0.18, 0.8])  # Reduce distance and adjust width
     text_box.axis('off')
     
     percentile = norm.cdf(z_score) * 100
@@ -158,7 +158,7 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
         # Save figure to a temporary file and insert into the PDF
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
             fig.savefig(tmpfile.name, format="png", dpi=100)
-            pdf.image(tmpfile.name, x=10, y=None, w=170)  # Make the image smaller and adjust positioning
+            pdf.image(tmpfile.name, x=10, y=None, h=60)  # Set fixed height and allow width to vary
             os.unlink(tmpfile.name)  # Remove the temporary file after use
         pdf.cell(190, 6, txt="", ln=True)
 
