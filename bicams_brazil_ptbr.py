@@ -218,7 +218,7 @@ def main():
     bvmt_not_applicable = st.checkbox("Não se aplica", key="bvmt_na")
     if not bvmt_not_applicable:
         bvmt_input_method = st.radio("Como deseja inserir a pontuação?", ["Deslizar", "Digite"], key="bvmt_input")
-        if bvmt_input_method was "Deslizar":
+        if bvmt_input_method == "Deslizar":
             bvmt_raw = st.slider("Pontuação Total BVMT", min_value=0, max_value=36, value=20, step=1)
         else:
             bvmt_raw = st.number_input("Pontuação Total BVMT", min_value=0, max_value=36, value=20, step=1)
