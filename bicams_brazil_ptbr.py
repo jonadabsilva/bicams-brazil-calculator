@@ -184,7 +184,12 @@ def main():
     education = st.slider("Escolaridade em anos", min_value=1, max_value=20, value=12, step=1)
     test_date = st.date_input("Data do Teste", value=datetime.today())
 
-    st.write("### CVLT (total de acertos)")
+    # Test names with abbreviations
+    cvlt_name = "California Verbal Learning Test (CVLT)"
+    bvmt_name = "Brief Visuospatial Memory Test (BVMT)"
+    sdmt_name = "Symbol Digit Modalities Test (SDMT)"
+
+    st.write(f"### {cvlt_name}")
     cvlt_not_applicable = st.checkbox("Não se aplica", key="cvlt_na")
     if not cvlt_not_applicable:
         cvlt_input_method = st.radio("Como deseja inserir a pontuação?", ["Deslizar", "Digite"], key="cvlt_input")
@@ -195,7 +200,7 @@ def main():
     else:
         cvlt_raw = None
 
-    st.write("### BVMT (total)")
+    st.write(f"### {bvmt_name}")
     bvmt_not_applicable = st.checkbox("Não se aplica", key="bvmt_na")
     if not bvmt_not_applicable:
         bvmt_input_method = st.radio("Como deseja inserir a pontuação?", ["Deslizar", "Digite"], key="bvmt_input")
@@ -206,7 +211,7 @@ def main():
     else:
         bvmt_raw = None
 
-    st.write("### SDMT")
+    st.write(f"### {sdmt_name}")
     sdmt_not_applicable = st.checkbox("Não se aplica", key="sdmt_na")
     if not sdmt_not_applicable:
         sdmt_input_method = st.radio("Como deseja inserir a pontuação?", ["Deslizar", "Digite"], key="sdmt_input")
@@ -232,11 +237,11 @@ def main():
             st.write(f"Percentil: {percentile:.1f}%")
             st.write(f"Classificação: {score_label[2]}")
 
-            fig_cvlt = plot_normal_distribution(cvlt_z, 'CVLT_totaldeacertos', "CVLT (total de acertos)")
+            fig_cvlt = plot_normal_distribution(cvlt_z, 'CVLT_totaldeacertos', cvlt_name)
             st.pyplot(fig_cvlt)
 
             z_scores.append(cvlt_z)
-            report_data.append(("CVLT (total de acertos)", cvlt_z, percentile, fig_cvlt, score_label))
+            report_data.append((cvlt_name, cvlt_z, percentile, fig_cvlt, score_label))
 
     if bvmt_raw is not None:
         bvmt_scaled = convert_to_scaled_score(bvmt_raw, 'BVMT_Total')
@@ -250,11 +255,11 @@ def main():
             st.write(f"Percentil: {percentile:.1f}%")
             st.write(f"Classificação: {score_label[2]}")
 
-            fig_bvmt = plot_normal_distribution(bvmt_z, 'BVMT_Total', "BVMT (total)")
+            fig_bvmt = plot_normal_distribution(bvmt_z, 'BVMT_Total', bvmt_name)
             st.pyplot(fig_bvmt)
 
             z_scores.append(bvmt_z)
-            report_data.append(("BVMT (total)", bvmt_z, percentile, fig_bvmt, score_label))
+            report_data.append((bvmt_name, bvmt_z, percentile, fig_bvmt, score_label))
 
     if sdmt_raw is not None:
         sdmt_scaled = convert_to_scaled_score(sdmt_raw, 'SDMT')
@@ -268,11 +273,11 @@ def main():
             st.write(f"Percentil: {percentile:.1f}%")
             st.write(f"Classificação: {score_label[2]}")
 
-            fig_sdmt = plot_normal_distribution(sdmt_z, 'SDMT', "SDMT")
+            fig_sdmt = plot_normal_distribution(sdmt_z, 'SDMT', sdmt_name)
             st.pyplot(fig_sdmt)
 
             z_scores.append(sdmt_z)
-            report_data.append(("SDMT", sdmt_z, percentile, fig_sdmt, score_label))
+            report_data.append((sdmt_name, sdmt_z, percentile, fig_sdmt, score_label))
 
     if st.button("Salvar Relatório como PDF"):
         if report_data:
