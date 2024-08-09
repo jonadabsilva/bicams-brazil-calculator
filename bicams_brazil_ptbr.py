@@ -155,9 +155,9 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
         
         # Save figure to a temporary file with consistent size and centered alignment
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
-            fig.set_size_inches(8, 3)  # Consistent figure size for saving
+            fig.set_size_inches(7.5, 2.75)  # Adjust the figure size for better fit and centering
             fig.savefig(tmpfile.name, format="png", dpi=100)
-            pdf.image(tmpfile.name, x=(210 - 160) / 2, y=None, h=50)  # Center the image horizontally
+            pdf.image(tmpfile.name, x=(210 - 150) / 2, y=None, h=50)  # Center the image horizontally
             os.unlink(tmpfile.name)  # Remove the temporary file after use
         pdf.cell(190, 6, txt="", ln=True)
 
@@ -170,7 +170,7 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
     pdf.cell(0, 4, "Disponível em https://bicams-brazil-calculator.streamlit.app/", ln=True, link="https://bicams-brazil-calculator.streamlit.app/", align="C")
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("Arial", "I", size=8)
-    pdf.multi_cell(190, 4, txt="Fonte dos dados normativos: Spedo CT et al. Brief International Cognitive Assessment for Multiple Sclerosis (BICAMS): discrete and regression-based norms for the Brazilian context. Arq Neuropsiquiatr. 2022 Jan;80(1):62-68. doi: 10.1590/0004-282X-ANP-2020-0526.", align="L")
+    pdf.multi_cell(190, 4, txt="Fonte dos dados normativos: Spedo CT, Pereira DA, Frndak SE, Marques VD, Barreira AA, Smerbeck A, Silva PHRD, Benedict RHB. Brief International Cognitive Assessment for Multiple Sclerosis (BICAMS): discrete and regression-based norms for the Brazilian context. Arq Neuropsiquiatr. 2022 Jan;80(1):62-68. doi: 10.1590/0004-282X-ANP-2020-0526.", align="L")
     
     file_name = f"{patient_name.replace(' ', '_')}_BICAMS_Report_{test_date.strftime('%Y-%m-%d')}.pdf"
     
