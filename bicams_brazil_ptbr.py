@@ -166,15 +166,36 @@ def main():
 
     st.write("### CVLT (total de acertos)")
     cvlt_not_applicable = st.checkbox("Não se aplica", key="cvlt_na")
-    cvlt_raw = None if cvlt_not_applicable else st.slider("Pontuação Total CVLT", min_value=0, max_value=80, value=50, step=1)
+    if not cvlt_not_applicable:
+        cvlt_input_method = st.radio("Como deseja inserir a pontuação?", ["Deslizar", "Digite"], key="cvlt_input")
+        if cvlt_input_method == "Deslizar":
+            cvlt_raw = st.slider("Pontuação Total CVLT", min_value=0, max_value=80, value=50, step=1)
+        else:
+            cvlt_raw = st.number_input("Pontuação Total CVLT", min_value=0, max_value=80, value=50, step=1)
+    else:
+        cvlt_raw = None
 
     st.write("### BVMT (total)")
     bvmt_not_applicable = st.checkbox("Não se aplica", key="bvmt_na")
-    bvmt_raw = None if bvmt_not_applicable else st.slider("Pontuação Total BVMT", min_value=0, max_value=36, value=20, step=1)
+    if not bvmt_not_applicable:
+        bvmt_input_method = st.radio("Como deseja inserir a pontuação?", ["Deslizar", "Digite"], key="bvmt_input")
+        if bvmt_input_method == "Deslizar":
+            bvmt_raw = st.slider("Pontuação Total BVMT", min_value=0, max_value=36, value=20, step=1)
+        else:
+            bvmt_raw = st.number_input("Pontuação Total BVMT", min_value=0, max_value=36, value=20, step=1)
+    else:
+        bvmt_raw = None
 
     st.write("### SDMT")
     sdmt_not_applicable = st.checkbox("Não se aplica", key="sdmt_na")
-    sdmt_raw = None if sdmt_not_applicable else st.slider("Pontuação SDMT", min_value=0, max_value=120, value=60, step=1)
+    if not sdmt_not_applicable:
+        sdmt_input_method = st.radio("Como deseja inserir a pontuação?", ["Deslizar", "Digite"], key="sdmt_input")
+        if sdmt_input_method == "Deslizar":
+            sdmt_raw = st.slider("Pontuação SDMT", min_value=0, max_value=120, value=60, step=1)
+        else:
+            sdmt_raw = st.number_input("Pontuação SDMT", min_value=0, max_value=120, value=60, step=1)
+    else:
+        sdmt_raw = None
 
     z_scores = []
     report_data = []
@@ -244,4 +265,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
