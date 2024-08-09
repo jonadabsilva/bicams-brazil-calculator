@@ -192,6 +192,7 @@ def main():
     bvmt_name = "Brief Visuospatial Memory Test - Revised (BVMT-R)"
     sdmt_name = "Symbol Digit Modalities Test (SDMT)"
 
+    # Process SDMT
     st.write(f"### {sdmt_name}")
     sdmt_not_applicable = st.checkbox("Não se aplica", key="sdmt_na")
     if not sdmt_not_applicable:
@@ -200,9 +201,27 @@ def main():
             sdmt_raw = st.slider("Pontuação SDMT", min_value=0, max_value=120, value=60, step=1)
         else:
             sdmt_raw = st.number_input("Pontuação SDMT", min_value=0, max_value=120, value=60, step=1)
-    else:
-        sdmt_raw = None
 
+        if sdmt_raw is not None:
+            sdmt_scaled = convert_to_scaled_score(sdmt_raw, 'SDMT')
+            if not np.isnan(sdmt_scaled):
+                sdmt_pss = calculate_predicted_scaled_score(age, sex, education, 'SDMT')
+                sdmt_z = (sdmt_scaled - sdmt_pss) / regression_models['SDMT']['residual_sd']
+                percentile = norm.cdf(sdmt_z) * 100
+                _, _, classification, _, color = interpret_percentile(percentile)
+                
+                st.write(f"**{sdmt_name}**")
+                st.write(f"Z-score: {sdmt_z:.2f}")
+                st.write(f"Percentil: {percentile:.1f}%")
+                st.write(f"Classificação: {classification}")
+        
+                fig_sdmt = plot_normal_distribution(sdmt_z, 'SDMT', sdmt_name, percentile, classification, color)
+                st.pyplot(fig_sdmt)
+        
+                z_scores.append(sdmt_z)
+                report_data.append((sdmt_name, sdmt_z, percentile, fig_sdmt, classification))
+
+    # Process CVLT
     st.write(f"### {cvlt_name}")
     cvlt_not_applicable = st.checkbox("Não se aplica", key="cvlt_na")
     if not cvlt_not_applicable:
@@ -211,9 +230,27 @@ def main():
             cvlt_raw = st.slider("Pontuação Total CVLT", min_value=0, max_value=80, value=50, step=1)
         else:
             cvlt_raw = st.number_input("Pontuação Total CVLT", min_value=0, max_value=80, value=50, step=1)
-    else:
-        cvlt_raw = None
 
+        if cvlt_raw is not None:
+            cvlt_scaled = convert_to_scaled_score(cvlt_raw, 'CVLT_totaldeacertos')
+            if not np.isnan(cvlt_scaled):
+                cvlt_pss = calculate_predicted_scaled_score(age, sex, education, 'CVLT_totaldeacertos')
+                cvlt_z = (cvlt_scaled - cvlt_pss) / regression_models['CVLT_totaldeacertos']['residual_sd']
+                percentile = norm.cdf(cvlt_z) * 100
+                _, _, classification, _, color = interpret_percentile(percentile)
+                
+                st.write(f"**{cvlt_name}**")
+                st.write(f"Z-score: {cvlt_z:.2f}")
+                st.write(f"Percentil: {percentile:.1f}%")
+                st.write(f"Classificação: {classification}")
+        
+                fig_cvlt = plot_normal_distribution(cvlt_z, 'CVLT_totaldeacertos', cvlt_name, percentile, classification, color)
+                st.pyplot(fig_cvlt)
+        
+                z_scores.append(cvlt_z)
+                report_data.append((cvlt_name, cvlt_z, percentile, fig_cvlt, classification))
+
+    # Process BVMT
     st.write(f"### {bvmt_name}")
     bvmt_not_applicable = st.checkbox("Não se aplica", key="bvmt_na")
     if not bvmt_not_applicable:
@@ -222,69 +259,25 @@ def main():
             bvmt_raw = st.slider("Pontuação Total BVMT", min_value=0, max_value=36, value=20, step=1)
         else:
             bvmt_raw = st.number_input("Pontuação Total BVMT", min_value=0, max_value=36, value=20, step=1)
-    else:
-        bvmt_raw = None
 
-    z_scores = []
-    report_data = []
-
-    if sdmt_raw is not None:
-        sdmt_scaled = convert_to_scaled_score(sdmt_raw, 'SDMT')
-        if not np.isnan(sdmt_scaled):
-            sdmt_pss = calculate_predicted_scaled_score(age, sex, education, 'SDMT')
-            sdmt_z = (sdmt_scaled - sdmt_pss) / regression_models['SDMT']['residual_sd']
-            percentile = norm.cdf(sdmt_z) * 100
-            _, _, classification, _, color = interpret_percentile(percentile)
-            
-            st.write(f"**{sdmt_name}**")
-            st.write(f"Z-score: {sdmt_z:.2f}")
-            st.write(f"Percentil: {percentile:.1f}%")
-            st.write(f"Classificação: {classification}")
-    
-            fig_sdmt = plot_normal_distribution(sdmt_z, 'SDMT', sdmt_name, percentile, classification, color)
-            st.pyplot(fig_sdmt)
-    
-            z_scores.append(sdmt_z)
-            report_data.append((sdmt_name, sdmt_z, percentile, fig_sdmt, classification))
-    
-    if cvlt_raw is not None:
-        cvlt_scaled = convert_to_scaled_score(cvlt_raw, 'CVLT_totaldeacertos')
-        if not np.isnan(cvlt_scaled):
-            cvlt_pss = calculate_predicted_scaled_score(age, sex, education, 'CVLT_totaldeacertos')
-            cvlt_z = (cvlt_scaled - cvlt_pss) / regression_models['CVLT_totaldeacertos']['residual_sd']
-            percentile = norm.cdf(cvlt_z) * 100
-            _, _, classification, _, color = interpret_percentile(percentile)
-            
-            st.write(f"**{cvlt_name}**")
-            st.write(f"Z-score: {cvlt_z:.2f}")
-            st.write(f"Percentil: {percentile:.1f}%")
-            st.write(f"Classificação: {classification}")
-    
-            fig_cvlt = plot_normal_distribution(cvlt_z, 'CVLT_totaldeacertos', cvlt_name, percentile, classification, color)
-            st.pyplot(fig_cvlt)
-    
-            z_scores.append(cvlt_z)
-            report_data.append((cvlt_name, cvlt_z, percentile, fig_cvlt, classification))
-    
-    if bvmt_raw is not None:
-        bvmt_scaled = convert_to_scaled_score(bvmt_raw, 'BVMT_Total')
-        if not np.isnan(bvmt_scaled):
-            bvmt_pss = calculate_predicted_scaled_score(age, sex, education, 'BVMT_Total')
-            bvmt_z = (bvmt_scaled - bvmt_pss) / regression_models['BVMT_Total']['residual_sd']
-            percentile = norm.cdf(bvmt_z) * 100
-            _, _, classification, _, color = interpret_percentile(percentile)
-            
-            st.write(f"**{bvmt_name}**")
-            st.write(f"Z-score: {bvmt_z:.2f}")
-            st.write(f"Percentil: {percentile:.1f}%")
-            st.write(f"Classificação: {classification}")
-    
-            fig_bvmt = plot_normal_distribution(bvmt_z, 'BVMT_Total', bvmt_name, percentile, classification, color)
-            st.pyplot(fig_bvmt)
-    
-            z_scores.append(bvmt_z)
-            report_data.append((bvmt_name, bvmt_z, percentile, fig_bvmt, classification))
-
+        if bvmt_raw is not None:
+            bvmt_scaled = convert_to_scaled_score(bvmt_raw, 'BVMT_Total')
+            if not np.isnan(bvmt_scaled):
+                bvmt_pss = calculate_predicted_scaled_score(age, sex, education, 'BVMT_Total')
+                bvmt_z = (bvmt_scaled - bvmt_pss) / regression_models['BVMT_Total']['residual_sd']
+                percentile = norm.cdf(bvmt_z) * 100
+                _, _, classification, _, color = interpret_percentile(percentile)
+                
+                st.write(f"**{bvmt_name}**")
+                st.write(f"Z-score: {bvmt_z:.2f}")
+                st.write(f"Percentil: {percentile:.1f}%")
+                st.write(f"Classificação: {classification}")
+        
+                fig_bvmt = plot_normal_distribution(bvmt_z, 'BVMT_Total', bvmt_name, percentile, classification, color)
+                st.pyplot(fig_bvmt)
+        
+                z_scores.append(bvmt_z)
+                report_data.append((bvmt_name, bvmt_z, percentile, fig_bvmt, classification))
 
     if st.button("Salvar Relatório como PDF"):
         if report_data:
@@ -294,7 +287,6 @@ def main():
             os.remove(temp_pdf_path)
         else:
             st.warning("Nenhum teste foi realizado.")
-
 
     # Add comments about the author and how to cite the calculator
     st.write("---")
