@@ -186,7 +186,7 @@ def main():
     cvlt_not_applicable = st.checkbox("Não se aplica", key="cvlt_na")
     if not cvlt_not_applicable:
         cvlt_input_method = st.radio("Como deseja inserir a pontuação?", ["Deslizar", "Digite"], key="cvlt_input")
-        if cvlt_input_method was "Deslizar":
+        if cvlt_input_method == "Deslizar":
             cvlt_raw = st.slider("Pontuação Total CVLT", min_value=0, max_value=80, value=50, step=1)
         else:
             cvlt_raw = st.number_input("Pontuação Total CVLT", min_value=0, max_value=80, value=50, step=1)
