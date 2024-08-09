@@ -92,7 +92,7 @@ def interpret_percentile(percentile):
 
 def plot_normal_distribution(z_score, measure, measure_name):
     # Set a consistent figure size and DPI for uniformity
-    fig, ax = plt.subplots(figsize=(8, 4), dpi=200)  # Set a consistent figure size and DPI
+    fig, ax = plt.subplots(figsize=(8, 4), dpi=100)  # Set a consistent figure size and DPI
 
     x = np.linspace(-4, 4, 100)
     y = norm.pdf(x)
