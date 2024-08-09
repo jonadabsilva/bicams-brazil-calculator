@@ -128,8 +128,8 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
 
     pdf.set_font("Arial", size=10)
     formatted_date = format_date(test_date)
-    header_text = (f"Nome ou Código: {patient_name} | Sexo: {sex} | Idade: {age} anos\n"
-                   f"Escolaridade: {education} anos | Data do Teste: {formatted_date}")
+    header_text = (f"Nome ou Código: {patient_name}   |   Sexo: {sex}   |   Idade: {age} anos\n"
+                   f"Escolaridade: {education} anos   |   Data do Teste: {formatted_date}")
     
     # Centralize the header text
     pdf.multi_cell(190, 6, txt=header_text, align="C")
