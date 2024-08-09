@@ -158,8 +158,8 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
         # Save figure to a temporary file and insert into the PDF
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
             fig.savefig(tmpfile.name, format="png", dpi=100)
-            # Maintain the aspect ratio by setting the height and allowing the width to scale
-            pdf.image(tmpfile.name, x=10, y=None, h=60)
+            # Ensure the image fits within the page without cropping
+            pdf.image(tmpfile.name, x=10, y=None, w=190)  # Use full width of the PDF page to prevent cropping
             os.unlink(tmpfile.name)  # Remove the temporary file after use
         pdf.cell(190, 6, txt="", ln=True)
 
