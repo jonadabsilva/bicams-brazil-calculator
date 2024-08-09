@@ -93,15 +93,15 @@ def interpret_percentile(percentile):
 # Função para mapear as cores com base na interpretação do percentil
 def get_color_based_on_percentile(percentile):
     if percentile <= 2:
-        return "#8B00FF"  # Violet
-    elif 2 < percentile <= 8:
         return "#FF0000"  # Red
-    elif 8 < percentile <= 24:
+    elif 2 < percentile <= 8:
         return "#FF4500"  # Orange
-    elif 24 < percentile <= 74:
+    elif 8 < percentile <= 24:
         return "#FFD700"  # Yellow
-    elif 74 < percentile <= 90:
+    elif 24 < percentile <= 74:
         return "#00FF00"  # Green
+    elif 74 < percentile <= 90:
+        return "#87CEEB"  # Light Blue
     elif 90 < percentile <= 97:
         return "#0000FF"  # Blue
     else:
