@@ -130,12 +130,15 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
     pdf.set_auto_page_break(auto=True, margin=10)
     pdf.add_page()
 
+    # Add a descriptive title
     pdf.set_font("Arial", "B", 12)
-    pdf.cell(190, 8, txt="Relatório BICAMS", ln=True, align="C")
+    pdf.multi_cell(190, 8, txt="Avaliação Cognitiva e Interpretação Normativa\n"
+                               "BICAMS - Bateria Internacional Breve de Avaliação Cognitiva para Esclerose Múltipla", 
+                  align="C")
     
     pdf.set_font("Arial", size=10)
     formatted_date = format_date(test_date)
-    header_text = f"Nome ou Código: {patient_name} | Sexo: {sex} | Idade: {age} anos | Escolaridade: {education} anos | Data do Teste: {formatted_date}"
+    header_text = f"Nome ou Código: {patient_name} | Sexo: {sex} | Idade: {age} anos\nEscolaridade: {education} anos | Data do Teste: {formatted_date}"
     pdf.multi_cell(190, 6, txt=header_text)
     pdf.cell(190, 6, txt="", ln=True)
 
@@ -164,7 +167,7 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
     pdf.cell(0, 4, "https://bicams-brazil-calculator.streamlit.app/", ln=True, link="https://bicams-brazil-calculator.streamlit.app/")
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("Arial", "I", size=8)
-    pdf.multi_cell(190, 4, txt="Fonte dos dados normativos: Spedo CT, Pereira DA, Frndak SE, Marques VD, Barreira AA, Smerbeck A, Silva PHRD, Benedict RHB. Brief International Cognitive Assessment for Multiple Sclerosis (BICAMS): discrete and regression-based norms for the Brazilian context. Arq Neuropsiquiatr. 2022 Jan;80(1):62-68. doi: 10.1590/0004-282X-ANP-2020-0526.", align="L")
+    pdf.multi_cell(190, 4, txt="Fonte dos dados normativos: Spedo CT et al. Brief International Cognitive Assessment for Multiple Sclerosis (BICAMS): discrete and regression-based norms for the Brazilian context. Arq Neuropsiquiatr. 2022 Jan;80(1):62-68. doi: 10.1590/0004-282X-ANP-2020-0526.", align="L")
     
     file_name = f"{patient_name.replace(' ', '_')}_BICAMS_Report_{test_date.strftime('%Y-%m-%d')}.pdf"
     
@@ -233,6 +236,8 @@ def main():
 
             percentile = norm.cdf(cvlt_z) * 100
             score_label = interpret_percentile(percentile)
+            
+            st.write(f"**{cvlt_name}**")
             st.write(f"Z-score: {cvlt_z:.2f}")
             st.write(f"Percentil: {percentile:.1f}%")
             st.write(f"Classificação: {score_label[2]}")
@@ -251,6 +256,8 @@ def main():
 
             percentile = norm.cdf(bvmt_z) * 100
             score_label = interpret_percentile(percentile)
+            
+            st.write(f"**{bvmt_name}**")
             st.write(f"Z-score: {bvmt_z:.2f}")
             st.write(f"Percentil: {percentile:.1f}%")
             st.write(f"Classificação: {score_label[2]}")
@@ -269,6 +276,8 @@ def main():
 
             percentile = norm.cdf(sdmt_z) * 100
             score_label = interpret_percentile(percentile)
+            
+            st.write(f"**{sdmt_name}**")
             st.write(f"Z-score: {sdmt_z:.2f}")
             st.write(f"Percentil: {percentile:.1f}%")
             st.write(f"Classificação: {score_label[2]}")
