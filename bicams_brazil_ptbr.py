@@ -68,7 +68,7 @@ def convert_to_scaled_score(raw_score, measure):
 def calculate_predicted_scaled_score(age, sex, education, measure):
     model = regression_models[measure]
     age2 = age ** 2
-    sex_for_model = 1 if sex == 'male' else 2
+    sex_for_model = 1 if sex == 'M' else 2
     pss = (model['constant'] + model['age'] * age + model['age2'] * age2 +
            model['sex'] * sex_for_model + model['education'] * education)
     return pss
@@ -143,7 +143,8 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
     
     pdf.set_font("Arial", size=10)
     formatted_date = format_date(test_date)
-    pdf.multi_cell(190, 6, txt=f"Nome ou Código: {patient_name} | Sexo: {sex} | Idade: {age} anos | Escolaridade: {education} anos | Data do Teste: {formatted_date}", ln=True)
+    header_text = f"Nome ou Código: {patient_name} | Sexo: {sex} | Idade: {age} anos | Escolaridade: {education} anos | Data do Teste: {formatted_date}"
+    pdf.multi_cell(190, 6, txt=header_text)
     pdf.cell(190, 6, txt="", ln=True)
 
     for data in report_data:
@@ -183,7 +184,8 @@ def main():
     st.title("Calculadora Normativa do BICAMS para a População Brasileira")
 
     patient_name = st.text_input("Nome ou Código do Paciente")
-    sex = st.selectbox("Sexo", ["M", "F"])
+    sex_display = st.selectbox("Sexo", ["Masculino", "Feminino"])
+    sex = "M" if sex_display == "Masculino" else "F"
     age = st.slider("Idade em anos", min_value=18, max_value=100, value=40, step=1)
     education = st.slider("Escolaridade em anos", min_value=1, max_value=20, value=12, step=1)
     test_date = st.date_input("Data do Teste", value=datetime.today())
