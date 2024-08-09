@@ -99,7 +99,6 @@ def plot_normal_distribution(z_score, measure, measure_name, percentile, interpr
     y = norm.pdf(x)
     ax.plot(x, y, zorder=1)
 
-    # Use the color passed as an argument to set the color of the dot
     ax.scatter([z_score], [norm.pdf(z_score)], color=color, edgecolor='black', linewidth=1.5,
                label=f"Z-score = {z_score:.2f}\nPercentil = {percentile:.1f}%\n{interpretation}", s=100, zorder=2)
 
