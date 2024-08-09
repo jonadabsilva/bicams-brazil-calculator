@@ -91,8 +91,8 @@ def interpret_percentile(percentile):
         return "<70", "<2", "Pontuação Excepcionalmente Baixa", "Exceptionally Low Score"
 
 def plot_normal_distribution(z_score, measure, measure_name):
-    # Set a larger figure size to accommodate both plot and textbox
-    fig, ax = plt.subplots(figsize=(8, 3), dpi=100)  # Increased width for the figure
+    # Set the figure size for uniformity
+    fig, ax = plt.subplots(figsize=(8, 3), dpi=100)  # Keep a consistent figure size for uniformity
 
     x = np.linspace(-4, 4, 100)
     y = norm.pdf(x)
@@ -120,19 +120,8 @@ def plot_normal_distribution(z_score, measure, measure_name):
 
     ax.grid()
 
-    # Adjust layout to fit all content within the figure
-    fig.tight_layout(rect=[0, 0, 0.75, 1])  # Allocate more space to the plot
-
-    # Reduced the textbox width to avoid cropping
-    text_box = fig.add_axes([0.77, 0.1, 0.21, 0.8])  
-    text_box.axis('off')
-
-    percentile = norm.cdf(z_score) * 100
-    score_label = interpret_percentile(percentile)
-    
-    text_box.text(0.1, 0.8, f"Z-score: {z_score:.2f}", fontsize=8, verticalalignment='top')
-    text_box.text(0.1, 0.6, f"Percentil: {percentile:.1f}%", fontsize=8, verticalalignment='top')
-    text_box.text(0.1, 0.4, f"Classificação: {score_label[2]}", fontsize=8, verticalalignment='top')
+    # No text box added to the graph
+    fig.tight_layout()  # Ensure the entire plot fits nicely within the figure
 
     return fig
 
@@ -160,7 +149,7 @@ def save_report_as_pdf(report_data, patient_name, sex, age, education, test_date
         
         # Save figure to a temporary file with consistent size
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
-            fig.set_size_inches(8, 3)  # Consistent figure size with increased width
+            fig.set_size_inches(8, 3)  # Consistent figure size for saving
             fig.savefig(tmpfile.name, format="png", dpi=100)
             pdf.image(tmpfile.name, x=10, y=None, w=190)  # Fit to page width without cropping
             os.unlink(tmpfile.name)  # Remove the temporary file after use
