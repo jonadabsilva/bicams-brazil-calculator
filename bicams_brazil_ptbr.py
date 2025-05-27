@@ -39,19 +39,59 @@ regression_models = {
 
 conversion_table = {
     'CVLT_totaldeacertos': {
-        1: (-np.inf, 19), 2: (20, 28), 3: (29, 31), 4: (32, 35), 5: (36, 39), 6: (40, 41),
-        7: (42, 44), 8: (45, 48), 9: (49, 52), 10: (53, 56), 11: (57, 60), 12: (61, 64),
-        13: (65, 66), 14: (67, 69), 15: (70, 71), 16: (72, 72), 17: (73, 74), 18: (75, 75), 19: (76, np.inf)
+        1:  (-np.inf, 19),
+        2:  (20, 28),
+        3:  (29, 31),
+        4:  (32, 35),
+        5:  (36, 39),
+        6:  (40, 41),
+        7:  (42, 44),
+        8:  (45, 48),
+        9:  (49, 52),
+        10: (53, 56),
+        11: (57, 60),
+        12: (61, 64),
+        13: (65, 66),
+        14: (67, 69),
+        15: (70, 71),
+        16: (72, 72),
+        17: (73, 74),
+        18: (75, 75),
+        19: (76, np.inf)
     },
     'BVMT_Total': {
-        1: (-np.inf, 2), 2: (3, 5), 3: (6, 8), 4: (9, 12), 5: (13, 17), 6: (18, 20),
-        7: (21, 23), 8: (24, 26), 9: (27, 28), 10: (29, 30), 11: (31, 32), 12: (33, 34), 13: (35, 35),
-        14: (36, 36)
+        3:  (-np.inf,  2),
+        4:  ( 3,  5),
+        5:  ( 6,  8),
+        6:  ( 9, 12),
+        7:  (13, 17),
+        8:  (18, 20),
+        9:  (21, 23),
+        10: (24, 26),
+        11: (27, 28),
+        12: (29, 30),
+        13: (31, 32),
+        14: (33, 34),
+        15: (35, 35),
+        16: (36, np.inf)
     },
     'SDMT': {
-        1: (-np.inf, 9), 2: (10, 17), 3: (18, 23), 4: (24, 29), 5: (30, 36), 6: (37, 43),
-        7: (44, 49), 8: (50, 53), 9: (54, 58), 10: (59, 62), 11: (63, 68), 12: (69, 74), 13: (75, 79),
-        14: (80, 93), 15: (94, 107), 16: (108, np.inf)
+        3:  (-np.inf,  9),
+        4:  (10, 17),
+        5:  (18, 23),
+        6:  (24, 29),
+        7:  (30, 36),
+        8:  (37, 43),
+        9:  (44, 49),
+        10: (50, 53),
+        11: (54, 58),
+        12: (59, 62),
+        13: (63, 68),
+        14: (69, 74),
+        15: (75, 79),
+        16: (80, 93),
+        17: (94,107),
+        18: (108, np.inf)
     }
 }
 
@@ -63,7 +103,7 @@ def convert_to_scaled_score(raw_score, measure):
     return np.nan
 
 # Function to calculate predicted scaled scores
-def calculate_predicted_raw_score(age, sex, education, measure):
+def calculate_predicted_scaled_score(age, sex, education, measure):
     model = regression_models[measure]
     age2 = age ** 2
     sex_for_model = 1 if sex == 'M' else 2
@@ -197,7 +237,7 @@ def main():
     sdmt_name = "Symbol Digit Modalities Test (SDMT)"
 
     # Process SDMT
-    st.write("---")
+    st.write("---")  # Add a line before each test
     st.write(f"### {sdmt_name}")
     sdmt_not_applicable = st.checkbox("Não se aplica", key="sdmt_na")
     if not sdmt_not_applicable:
@@ -206,28 +246,28 @@ def main():
             sdmt_raw = st.slider("Pontuação SDMT", min_value=0, max_value=120, value=60, step=1)
         else:
             sdmt_raw = st.number_input("Pontuação SDMT", min_value=0, max_value=120, value=60, step=1)
-    
+
         if sdmt_raw is not None:
-            # --- Regression‐based z from raw scores per Spedo et al. ---
-            predicted_raw = calculate_predicted_raw_score(age, sex, education, 'SDMT')
-            residual_sd   = regression_models['SDMT']['residual_sd']
-            sdmt_z        = (predicted_raw - sdmt_raw) / residual_sd
-            percentile    = norm.cdf(-sdmt_z) * 100  # percentile of performing this low or lower
-            _, _, classification, _, color = interpret_percentile(percentile)
+            sdmt_scaled = convert_to_scaled_score(sdmt_raw, 'SDMT')
+            if not np.isnan(sdmt_scaled):
+                sdmt_pss = calculate_predicted_scaled_score(age, sex, education, 'SDMT')
+                sdmt_z = (sdmt_scaled - sdmt_pss) / regression_models['SDMT']['residual_sd']
+                percentile = norm.cdf(sdmt_z) * 100
+                _, _, classification, _, color = interpret_percentile(percentile)
+                
+                st.write(f"**{sdmt_name}**")
+                st.write(f"Z-score: {sdmt_z:.2f}")
+                st.write(f"Percentil: {percentile:.1f}%")
+                st.write(f"Classificação: {classification}")
     
-            st.write(f"**{sdmt_name}**")
-            st.write(f"Z-score: {sdmt_z:.2f}")
-            st.write(f"Percentil: {percentile:.1f}%")
-            st.write(f"Classificação: {classification}")
+                fig_sdmt = plot_normal_distribution(sdmt_z, 'SDMT', sdmt_name, percentile, classification, color)
+                st.pyplot(fig_sdmt)
     
-            fig_sdmt = plot_normal_distribution(sdmt_z, 'SDMT', sdmt_name, percentile, classification, color)
-            st.pyplot(fig_sdmt)
-    
-            z_scores.append(sdmt_z)
-            report_data.append((sdmt_name, sdmt_z, percentile, fig_sdmt, classification))
+                z_scores.append(sdmt_z)
+                report_data.append((sdmt_name, sdmt_z, percentile, fig_sdmt, classification))
 
     # Process CVLT
-    st.write("---")
+    st.write("---")  # Add a line before each test
     st.write(f"### {cvlt_name}")
     cvlt_not_applicable = st.checkbox("Não se aplica", key="cvlt_na")
     if not cvlt_not_applicable:
@@ -236,28 +276,28 @@ def main():
             cvlt_raw = st.slider("Pontuação Total CVLT", min_value=0, max_value=80, value=50, step=1)
         else:
             cvlt_raw = st.number_input("Pontuação Total CVLT", min_value=0, max_value=80, value=50, step=1)
-    
+
         if cvlt_raw is not None:
-            # --- Regression‐based z from raw scores per Spedo et al. ---
-            predicted_raw = calculate_predicted_raw_score(age, sex, education, 'CVLT_totaldeacertos')
-            residual_sd   = regression_models['CVLT_totaldeacertos']['residual_sd']
-            cvlt_z        = (predicted_raw - cvlt_raw) / residual_sd
-            percentile    = norm.cdf(-cvlt_z) * 100
-            _, _, classification, _, color = interpret_percentile(percentile)
+            cvlt_scaled = convert_to_scaled_score(cvlt_raw, 'CVLT_totaldeacertos')
+            if not np.isnan(cvlt_scaled):
+                cvlt_pss = calculate_predicted_scaled_score(age, sex, education, 'CVLT_totaldeacertos')
+                cvlt_z = (cvlt_scaled - cvlt_pss) / regression_models['CVLT_totaldeacertos']['residual_sd']
+                percentile = norm.cdf(cvlt_z) * 100
+                _, _, classification, _, color = interpret_percentile(percentile)
+                
+                st.write(f"**{cvlt_name}**")
+                st.write(f"Z-score: {cvlt_z:.2f}")
+                st.write(f"Percentil: {percentile:.1f}%")
+                st.write(f"Classificação: {classification}")
     
-            st.write(f"**{cvlt_name}**")
-            st.write(f"Z-score: {cvlt_z:.2f}")
-            st.write(f"Percentil: {percentile:.1f}%")
-            st.write(f"Classificação: {classification}")
+                fig_cvlt = plot_normal_distribution(cvlt_z, 'CVLT_totaldeacertos', cvlt_name, percentile, classification, color)
+                st.pyplot(fig_cvlt)
     
-            fig_cvlt = plot_normal_distribution(cvlt_z, 'CVLT_totaldeacertos', cvlt_name, percentile, classification, color)
-            st.pyplot(fig_cvlt)
-    
-            z_scores.append(cvlt_z)
-            report_data.append((cvlt_name, cvlt_z, percentile, fig_cvlt, classification))
-    
+                z_scores.append(cvlt_z)
+                report_data.append((cvlt_name, cvlt_z, percentile, fig_cvlt, classification))
+
     # Process BVMT
-    st.write("---")
+    st.write("---")  # Add a line before each test
     st.write(f"### {bvmt_name}")
     bvmt_not_applicable = st.checkbox("Não se aplica", key="bvmt_na")
     if not bvmt_not_applicable:
@@ -266,25 +306,26 @@ def main():
             bvmt_raw = st.slider("Pontuação Total BVMT", min_value=0, max_value=36, value=20, step=1)
         else:
             bvmt_raw = st.number_input("Pontuação Total BVMT", min_value=0, max_value=36, value=20, step=1)
-    
+
         if bvmt_raw is not None:
-            # --- Regression‐based z from raw scores per Spedo et al. ---
-            predicted_raw = calculate_predicted_raw_score(age, sex, education, 'BVMT_Total')
-            residual_sd   = regression_models['BVMT_Total']['residual_sd']
-            bvmt_z        = (predicted_raw - bvmt_raw) / residual_sd
-            percentile    = norm.cdf(-bvmt_z) * 100
-            _, _, classification, _, color = interpret_percentile(percentile)
+            bvmt_scaled = convert_to_scaled_score(bvmt_raw, 'BVMT_Total')
+            if not np.isnan(bvmt_scaled):
+                bvmt_pss = calculate_predicted_scaled_score(age, sex, education, 'BVMT_Total')
+                bvmt_z = (bvmt_scaled - bvmt_pss) / regression_models['BVMT_Total']['residual_sd']
+                percentile = norm.cdf(bvmt_z) * 100
+                _, _, classification, _, color = interpret_percentile(percentile)
+                
+                st.write(f"**{bvmt_name}**")
+                st.write(f"Z-score: {bvmt_z:.2f}")
+                st.write(f"Percentil: {percentile:.1f}%")
+                st.write(f"Classificação: {classification}")
     
-            st.write(f"**{bvmt_name}**")
-            st.write(f"Z-score: {bvmt_z:.2f}")
-            st.write(f"Percentil: {percentile:.1f}%")
-            st.write(f"Classificação: {classification}")
+                fig_bvmt = plot_normal_distribution(bvmt_z, 'BVMT_Total', bvmt_name, percentile, classification, color)
+                st.pyplot(fig_bvmt)
     
-            fig_bvmt = plot_normal_distribution(bvmt_z, 'BVMT_Total', bvmt_name, percentile, classification, color)
-            st.pyplot(fig_bvmt)
-    
-            z_scores.append(bvmt_z)
-            report_data.append((bvmt_name, bvmt_z, percentile, fig_bvmt, classification))
+                z_scores.append(bvmt_z)
+                report_data.append((bvmt_name, bvmt_z, percentile, fig_bvmt, classification))
+
 
     if st.button("Salvar Relatório como PDF"):
         if report_data:
