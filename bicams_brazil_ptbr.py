@@ -63,7 +63,7 @@ def convert_to_scaled_score(raw_score, measure):
     return np.nan
 
 # Function to calculate predicted scaled scores
-def calculate_predicted_scaled_score(age, sex, education, measure):
+def calculate_predicted_raw_score(age, sex, education, measure):
     model = regression_models[measure]
     age2 = age ** 2
     sex_for_model = 1 if sex == 'M' else 2
